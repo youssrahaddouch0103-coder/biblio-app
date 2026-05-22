@@ -18,7 +18,10 @@ void main() {
 class MyApp extends StatelessWidget {
   final LivreRepository repository;
 
-  const MyApp({super.key, required this.repository});
+  const MyApp({
+    super.key,
+    required this.repository,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +30,82 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'BiblioApp',
+
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
           useMaterial3: true,
+
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.indigo,
+            brightness: Brightness.light,
+          ),
+
+          scaffoldBackgroundColor: Colors.grey[100],
+
+          appBarTheme: const AppBarTheme(
+            centerTitle: true,
+            elevation: 2,
+            backgroundColor: Colors.indigo,
+            foregroundColor: Colors.white,
+          ),
+
+          floatingActionButtonTheme:
+              const FloatingActionButtonThemeData(
+            backgroundColor: Colors.indigo,
+            foregroundColor: Colors.white,
+          ),
+
+          cardTheme: CardThemeData(
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: Colors.grey.shade300,
+              ),
+            ),
+
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(14),
+              ),
+              borderSide: BorderSide(
+                color: Colors.indigo,
+                width: 2,
+              ),
+            ),
+          ),
+
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                vertical: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+
+          snackBarTheme: SnackBarThemeData(
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
         ),
+
         home: const ListeLivresScreen(),
       ),
     );
