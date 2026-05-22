@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/livre_bloc.dart';
 import '../bloc/livre_event.dart';
 import '../models/livre.dart';
+import 'modifier_livre_screen.dart';
 
 class DetailLivreScreen extends StatelessWidget {
   final Livre livre;
@@ -36,12 +37,25 @@ class DetailLivreScreen extends StatelessWidget {
     );
   }
 
+  void _ouvrirModification(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ModifierLivreScreen(livre: livre),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Détails du livre'),
         actions: [
+          IconButton(
+            onPressed: () => _ouvrirModification(context),
+            icon: const Icon(Icons.edit),
+          ),
           IconButton(
             onPressed: () => _confirmerSuppression(context),
             icon: const Icon(Icons.delete),
