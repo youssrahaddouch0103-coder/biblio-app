@@ -4,11 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/livre_bloc.dart';
 import '../bloc/livre_event.dart';
 import '../models/livre.dart';
+import '../utils/validators.dart';
+import '../widgets/custom_text_field.dart';
 
 class ModifierLivreScreen extends StatefulWidget {
   final Livre livre;
 
-  const ModifierLivreScreen({super.key, required this.livre});
+  const ModifierLivreScreen({
+    super.key,
+    required this.livre,
+  });
 
   @override
   State<ModifierLivreScreen> createState() => _ModifierLivreScreenState();
@@ -20,10 +25,25 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
   late TextEditingController _titreController;
   late TextEditingController _auteurController;
   late TextEditingController _anneeController;
-  late TextEditingController _genreController;
-  late TextEditingController _noteController;
 
+  late String _genre;
+  late double _note;
   late bool _lu;
+  late bool _favori;
+
+  final List<String> _genres = [
+    'Roman',
+    'Fantasy',
+    'Science-fiction',
+    'Classique',
+    'Aventure',
+    'Romance',
+    'Policier',
+    'Thriller',
+    'Historique',
+    'Développement personnel',
+    'Autre',
+  ];
 
   @override
   void initState() {
@@ -31,12 +51,14 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
 
     _titreController = TextEditingController(text: widget.livre.titre);
     _auteurController = TextEditingController(text: widget.livre.auteur);
-    _anneeController =
-        TextEditingController(text: widget.livre.annee?.toString() ?? '');
-    _genreController = TextEditingController(text: widget.livre.genre ?? '');
-    _noteController =
-        TextEditingController(text: widget.livre.note?.toString() ?? '');
+    _anneeController = TextEditingController(
+      text: widget.livre.annee?.toString() ?? '',
+    );
+
+    _genre = widget.livre.genre ?? 'Roman';
+    _note = widget.livre.note ?? 3.0;
     _lu = widget.livre.lu;
+    _favori = widget.livre.favori;
   }
 
   @override
@@ -44,64 +66,30 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
     _titreController.dispose();
     _auteurController.dispose();
     _anneeController.dispose();
-    _genreController.dispose();
-    _noteController.dispose();
     super.dispose();
   }
 
-  String? _validerAnnee(String? value) {
-    if (value == null || value.trim().isEmpty) return null;
-
-    final annee = int.tryParse(value.trim());
-
-    if (annee == null) {
-      return 'Veuillez entrer une année valide';
-    }
-
-    if (annee < 0 || annee > DateTime.now().year) {
-      return 'Année invalide';
-    }
-
-    return null;
-  }
-
-  String? _validerNote(String? value) {
-    if (value == null || value.trim().isEmpty) return null;
-
-    final note = double.tryParse(value.trim().replaceAll(',', '.'));
-
-    if (note == null) {
-      return 'Veuillez entrer une note valide';
-    }
-
-    if (note < 0 || note > 5) {
-      return 'La note doit être entre 0 et 5';
-    }
-
-    return null;
-  }
-
-  void _modifierLivre() {
+  void _updateLivre() {
     if (_formKey.currentState!.validate()) {
-      final livreModifie = Livre(
-        id: widget.livre.id,
+      final updatedLivre = widget.livre.copyWith(
         titre: _titreController.text.trim(),
         auteur: _auteurController.text.trim(),
         annee: _anneeController.text.trim().isEmpty
             ? null
-            : int.tryParse(_anneeController.text.trim()),
-        genre: _genreController.text.trim().isEmpty
-            ? null
-            : _genreController.text.trim(),
-        note: _noteController.text.trim().isEmpty
-            ? null
-            : double.tryParse(_noteController.text.trim().replaceAll(',', '.')),
+            : int.parse(_anneeController.text.trim()),
+        genre: _genre,
+        note: _note,
         lu: _lu,
+        favori: _favori,
+        dateModification: DateTime.now().toIso8601String(),
       );
 
-      context.read<LivreBloc>().add(UpdateLivre(livreModifie));
+      context.read<LivreBloc>().add(UpdateLivre(updatedLivre));
 
-      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Livre modifié avec succès')),
+      );
+
       Navigator.pop(context);
     }
   }
@@ -112,75 +100,95 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
       appBar: AppBar(
         title: const Text('Modifier le livre'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
             children: [
-              TextFormField(
+              CustomTextField(
                 controller: _titreController,
-                decoration: const InputDecoration(
-                  labelText: 'Titre',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Le titre est obligatoire'
-                    : null,
+                label: 'Titre',
+                icon: Icons.book,
+                validator: (value) =>
+                    Validators.requiredField(value, 'Le titre'),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
+              const SizedBox(height: 16),
+              CustomTextField(
                 controller: _auteurController,
-                decoration: const InputDecoration(
-                  labelText: 'Auteur',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? "L'auteur est obligatoire"
-                    : null,
+                label: 'Auteur',
+                icon: Icons.person,
+                validator: (value) =>
+                    Validators.requiredField(value, 'L’auteur'),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
+              const SizedBox(height: 16),
+              CustomTextField(
                 controller: _anneeController,
+                label: 'Année',
+                icon: Icons.calendar_today,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Année',
-                  border: OutlineInputBorder(),
-                ),
-                validator: _validerAnnee,
+                validator: Validators.validateYear,
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _genreController,
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _genres.contains(_genre) ? _genre : 'Autre',
                 decoration: const InputDecoration(
                   labelText: 'Genre',
+                  prefixIcon: Icon(Icons.category),
                   border: OutlineInputBorder(),
                 ),
+                items: _genres.map((genre) {
+                  return DropdownMenuItem(
+                    value: genre,
+                    child: Text(genre),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _genre = value!;
+                  });
+                },
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _noteController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Note /5',
-                  border: OutlineInputBorder(),
-                ),
-                validator: _validerNote,
+              const SizedBox(height: 16),
+              Text('Note : ${_note.toStringAsFixed(1)} / 5'),
+              Slider(
+                value: _note,
+                min: 0,
+                max: 5,
+                divisions: 10,
+                label: _note.toStringAsFixed(1),
+                onChanged: (value) {
+                  setState(() {
+                    _note = value;
+                  });
+                },
               ),
-              const SizedBox(height: 12),
-              CheckboxListTile(
+              SwitchListTile(
                 title: const Text('Livre lu'),
                 value: _lu,
                 onChanged: (value) {
                   setState(() {
-                    _lu = value ?? false;
+                    _lu = value;
                   });
                 },
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _modifierLivre,
-                child: const Text('Modifier'),
+              SwitchListTile(
+                title: const Text('Favori'),
+                value: _favori,
+                onChanged: (value) {
+                  setState(() {
+                    _favori = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _updateLivre,
+                  icon: const Icon(Icons.save),
+                  label: const Text('Enregistrer les modifications'),
+                ),
               ),
             ],
           ),
