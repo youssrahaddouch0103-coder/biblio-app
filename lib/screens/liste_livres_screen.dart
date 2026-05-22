@@ -4,9 +4,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/livre_bloc.dart';
 import '../bloc/livre_state.dart';
 import 'ajouter_livre_screen.dart';
+import 'detail_livre_screen.dart';
 
-class ListeLivresScreen extends StatelessWidget {
+class ListeLivresScreen extends StatefulWidget {
   const ListeLivresScreen({super.key});
+
+  @override
+  State<ListeLivresScreen> createState() => _ListeLivresScreenState();
+}
+
+class _ListeLivresScreenState extends State<ListeLivresScreen> {
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -17,87 +25,113 @@ class ListeLivresScreen extends StatelessWidget {
       ),
       body: BlocBuilder<LivreBloc, LivreState>(
         builder: (context, state) {
-          // Chargement
           if (state is LivreLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
-          // Erreur
           if (state is LivreError) {
-            return Center(
-              child: Text(state.message),
-            );
+            return Center(child: Text(state.message));
           }
 
-          // Données chargées
           if (state is LivreLoaded) {
-            // Aucun livre
-            if (state.livres.isEmpty) {
-              return const Center(
-                child: Text(
-                  'Aucun livre pour le moment.',
-                  style: TextStyle(fontSize: 18),
+            final filteredLivres = state.livres.where((livre) {
+              return livre.titre
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()) ||
+                  livre.auteur
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase());
+            }).toList();
+
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Rechercher un livre...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        searchQuery = value;
+                      });
+                    },
+                  ),
                 ),
-              );
-            }
+                Expanded(
+                  child: filteredLivres.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Aucun livre trouvé.',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: filteredLivres.length,
+                          itemBuilder: (context, index) {
+                            final livre = filteredLivres[index];
 
-            // Liste des livres
-            return ListView.builder(
-              itemCount: state.livres.length,
-              itemBuilder: (context, index) {
-                final livre = state.livres[index];
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      child: Text(
-                        livre.titre[0].toUpperCase(),
-                      ),
-                    ),
-                    title: Text(
-                      livre.titre,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Auteur : ${livre.auteur}'),
-                        if (livre.genre != null)
-                          Text('Genre : ${livre.genre}'),
-                        if (livre.annee != null)
-                          Text('Année : ${livre.annee}'),
-                      ],
-                    ),
-                    trailing: Icon(
-                      livre.lu
-                          ? Icons.check_circle
-                          : Icons.circle_outlined,
-                      color: livre.lu ? Colors.green : Colors.grey,
-                    ),
-                  ),
-                );
-              },
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              child: ListTile(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailLivreScreen(livre: livre),
+                                    ),
+                                  );
+                                },
+                                leading: CircleAvatar(
+                                  child: Text(
+                                    livre.titre[0].toUpperCase(),
+                                  ),
+                                ),
+                                title: Text(
+                                  livre.titre,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Auteur : ${livre.auteur}'),
+                                    if (livre.genre != null)
+                                      Text('Genre : ${livre.genre}'),
+                                    if (livre.annee != null)
+                                      Text('Année : ${livre.annee}'),
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  livre.lu
+                                      ? Icons.check_circle
+                                      : Icons.circle_outlined,
+                                  color:
+                                      livre.lu ? Colors.green : Colors.grey,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
             );
           }
 
-          return const Center(
-            child: Text('Chargement...'),
-          );
+          return const Center(child: Text('Chargement...'));
         },
       ),
-
-      // Bouton ajouter
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-
         onPressed: () {
           Navigator.push(
             context,
