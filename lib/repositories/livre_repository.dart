@@ -4,25 +4,57 @@ import '../models/livre.dart';
 class LivreRepository {
   final DatabaseHelper databaseHelper;
 
-  LivreRepository({required this.databaseHelper});
+  LivreRepository({
+    required this.databaseHelper,
+  });
 
   Future<List<Livre>> getAllLivres() async {
-    return await databaseHelper.getLivres();
+    try {
+      return await databaseHelper.getLivres();
+    } catch (e) {
+      throw Exception(
+        'Erreur lors du chargement des livres',
+      );
+    }
   }
 
   Future<Livre?> getLivreById(int id) async {
-    return await databaseHelper.getLivreById(id);
+    try {
+      return await databaseHelper.getLivreById(id);
+    } catch (e) {
+      throw Exception(
+        'Erreur lors du chargement du livre',
+      );
+    }
   }
 
   Future<int> addLivre(Livre livre) async {
-    return await databaseHelper.insertLivre(livre);
+    try {
+      return await databaseHelper.insertLivre(livre);
+    } catch (e) {
+      throw Exception(
+        'Erreur lors de l’ajout du livre',
+      );
+    }
   }
 
   Future<int> updateLivre(Livre livre) async {
-    return await databaseHelper.updateLivre(livre);
+    try {
+      return await databaseHelper.updateLivre(livre);
+    } catch (e) {
+      throw Exception(
+        'Erreur lors de la modification du livre',
+      );
+    }
   }
 
   Future<int> deleteLivre(int id) async {
-    return await databaseHelper.deleteLivre(id);
+    try {
+      return await databaseHelper.deleteLivre(id);
+    } catch (e) {
+      throw Exception(
+        'Erreur lors de la suppression du livre',
+      );
+    }
   }
 }

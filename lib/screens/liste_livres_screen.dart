@@ -58,9 +58,7 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
             final filteredLivres = state.livres.where((livre) {
               final matchSearch =
                   livre.titre.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                      livre.auteur
-                          .toLowerCase()
-                          .contains(searchQuery.toLowerCase());
+                      livre.auteur.toLowerCase().contains(searchQuery.toLowerCase());
 
               final matchGenre =
                   selectedGenre == 'Tous' || livre.genre == selectedGenre;
@@ -90,7 +88,7 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: DropdownButtonFormField<String>(
-                    value: selectedGenre,
+                    initialValue: selectedGenre,
                     decoration: const InputDecoration(
                       labelText: 'Filtrer par genre',
                       border: OutlineInputBorder(),
@@ -166,8 +164,7 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                                   livre.lu
                                       ? Icons.check_circle
                                       : Icons.circle_outlined,
-                                  color:
-                                      livre.lu ? Colors.green : Colors.grey,
+                                  color: livre.lu ? Colors.green : Colors.grey,
                                 ),
                               ),
                             );
