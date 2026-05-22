@@ -36,7 +36,6 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
     _genreController = TextEditingController(text: widget.livre.genre ?? '');
     _noteController =
         TextEditingController(text: widget.livre.note?.toString() ?? '');
-
     _lu = widget.livre.lu;
   }
 
@@ -48,6 +47,38 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
     _genreController.dispose();
     _noteController.dispose();
     super.dispose();
+  }
+
+  String? _validerAnnee(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+
+    final annee = int.tryParse(value.trim());
+
+    if (annee == null) {
+      return 'Veuillez entrer une année valide';
+    }
+
+    if (annee < 0 || annee > DateTime.now().year) {
+      return 'Année invalide';
+    }
+
+    return null;
+  }
+
+  String? _validerNote(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+
+    final note = double.tryParse(value.trim().replaceAll(',', '.'));
+
+    if (note == null) {
+      return 'Veuillez entrer une note valide';
+    }
+
+    if (note < 0 || note > 5) {
+      return 'La note doit être entre 0 et 5';
+    }
+
+    return null;
   }
 
   void _modifierLivre() {
@@ -64,7 +95,7 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
             : _genreController.text.trim(),
         note: _noteController.text.trim().isEmpty
             ? null
-            : double.tryParse(_noteController.text.trim()),
+            : double.tryParse(_noteController.text.trim().replaceAll(',', '.')),
         lu: _lu,
       );
 
@@ -93,10 +124,9 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                   labelText: 'Titre',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) =>
-                    value == null || value.trim().isEmpty
-                        ? 'Le titre est obligatoire'
-                        : null,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'Le titre est obligatoire'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -105,10 +135,9 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                   labelText: 'Auteur',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) =>
-                    value == null || value.trim().isEmpty
-                        ? "L'auteur est obligatoire"
-                        : null,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? "L'auteur est obligatoire"
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -118,6 +147,7 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                   labelText: 'Année',
                   border: OutlineInputBorder(),
                 ),
+                validator: _validerAnnee,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -135,6 +165,7 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                   labelText: 'Note /5',
                   border: OutlineInputBorder(),
                 ),
+                validator: _validerNote,
               ),
               const SizedBox(height: 12),
               CheckboxListTile(
