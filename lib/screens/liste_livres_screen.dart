@@ -158,13 +158,41 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                                       Text('Genre : ${livre.genre}'),
                                     if (livre.annee != null)
                                       Text('Année : ${livre.annee}'),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${livre.note?.toStringAsFixed(1) ?? '0.0'} / 5',
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                                trailing: Icon(
-                                  livre.lu
-                                      ? Icons.check_circle
-                                      : Icons.circle_outlined,
-                                  color: livre.lu ? Colors.green : Colors.grey,
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      livre.lu
+                                          ? Icons.check_circle
+                                          : Icons.circle_outlined,
+                                      color: livre.lu
+                                          ? Colors.green
+                                          : Colors.grey,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    if (livre.favori)
+                                      const Icon(
+                                        Icons.favorite,
+                                        color: Colors.red,
+                                        size: 18,
+                                      ),
+                                  ],
                                 ),
                               ),
                             );
