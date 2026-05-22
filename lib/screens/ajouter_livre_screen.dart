@@ -110,8 +110,9 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                 validator: Validators.validateYear,
               ),
               const SizedBox(height: 16),
+
               DropdownButtonFormField<String>(
-                value: _genre,
+                initialValue: _genre,
                 decoration: const InputDecoration(
                   labelText: 'Genre',
                   prefixIcon: Icon(Icons.category),
@@ -129,8 +130,11 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                   });
                 },
               ),
+
               const SizedBox(height: 16),
+
               Text('Note : ${_note.toStringAsFixed(1)} / 5'),
+
               Slider(
                 value: _note,
                 min: 0,
@@ -143,6 +147,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                   });
                 },
               ),
+
               SwitchListTile(
                 title: const Text('Livre lu'),
                 value: _lu,
@@ -152,6 +157,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                   });
                 },
               ),
+
               SwitchListTile(
                 title: const Text('Favori'),
                 value: _favori,
@@ -161,7 +167,9 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                   });
                 },
               ),
+
               const SizedBox(height: 24),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(

@@ -16,10 +16,12 @@ class ModifierLivreScreen extends StatefulWidget {
   });
 
   @override
-  State<ModifierLivreScreen> createState() => _ModifierLivreScreenState();
+  State<ModifierLivreScreen> createState() =>
+      _ModifierLivreScreenState();
 }
 
-class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
+class _ModifierLivreScreenState
+    extends State<ModifierLivreScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _titreController;
@@ -49,8 +51,12 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
   void initState() {
     super.initState();
 
-    _titreController = TextEditingController(text: widget.livre.titre);
-    _auteurController = TextEditingController(text: widget.livre.auteur);
+    _titreController =
+        TextEditingController(text: widget.livre.titre);
+
+    _auteurController =
+        TextEditingController(text: widget.livre.auteur);
+
     _anneeController = TextEditingController(
       text: widget.livre.annee?.toString() ?? '',
     );
@@ -81,13 +87,18 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
         note: _note,
         lu: _lu,
         favori: _favori,
-        dateModification: DateTime.now().toIso8601String(),
+        dateModification:
+            DateTime.now().toIso8601String(),
       );
 
-      context.read<LivreBloc>().add(UpdateLivre(updatedLivre));
+      context
+          .read<LivreBloc>()
+          .add(UpdateLivre(updatedLivre));
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Livre modifié avec succès')),
+        const SnackBar(
+          content: Text('Livre modifié avec succès'),
+        ),
       );
 
       Navigator.pop(context);
@@ -111,17 +122,23 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                 label: 'Titre',
                 icon: Icons.book,
                 validator: (value) =>
-                    Validators.requiredField(value, 'Le titre'),
+                    Validators.requiredField(
+                        value, 'Le titre'),
               ),
+
               const SizedBox(height: 16),
+
               CustomTextField(
                 controller: _auteurController,
                 label: 'Auteur',
                 icon: Icons.person,
                 validator: (value) =>
-                    Validators.requiredField(value, 'L’auteur'),
+                    Validators.requiredField(
+                        value, 'L’auteur'),
               ),
+
               const SizedBox(height: 16),
+
               CustomTextField(
                 controller: _anneeController,
                 label: 'Année',
@@ -129,9 +146,14 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                 keyboardType: TextInputType.number,
                 validator: Validators.validateYear,
               ),
+
               const SizedBox(height: 16),
+
               DropdownButtonFormField<String>(
-                value: _genres.contains(_genre) ? _genre : 'Autre',
+                initialValue:
+                    _genres.contains(_genre)
+                        ? _genre
+                        : 'Autre',
                 decoration: const InputDecoration(
                   labelText: 'Genre',
                   prefixIcon: Icon(Icons.category),
@@ -149,8 +171,13 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                   });
                 },
               ),
+
               const SizedBox(height: 16),
-              Text('Note : ${_note.toStringAsFixed(1)} / 5'),
+
+              Text(
+                'Note : ${_note.toStringAsFixed(1)} / 5',
+              ),
+
               Slider(
                 value: _note,
                 min: 0,
@@ -163,6 +190,7 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                   });
                 },
               ),
+
               SwitchListTile(
                 title: const Text('Livre lu'),
                 value: _lu,
@@ -172,6 +200,7 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                   });
                 },
               ),
+
               SwitchListTile(
                 title: const Text('Favori'),
                 value: _favori,
@@ -181,13 +210,17 @@ class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
                   });
                 },
               ),
+
               const SizedBox(height: 24),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _updateLivre,
                   icon: const Icon(Icons.save),
-                  label: const Text('Enregistrer les modifications'),
+                  label: const Text(
+                    'Enregistrer les modifications',
+                  ),
                 ),
               ),
             ],
