@@ -19,7 +19,6 @@ class DatabaseHelper {
 
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
-
     final path = join(dbPath, filePath);
 
     return await openDatabase(
@@ -29,7 +28,7 @@ class DatabaseHelper {
     );
   }
 
-  Future _createDB(Database db, int version) async {
+  Future<void> _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE livres(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,26 +42,27 @@ class DatabaseHelper {
     ''');
   }
 
-  // CREATE
   Future<int> insertLivre(Livre livre) async {
     final db = await instance.database;
 
     return await db.insert(
       'livres',
       livre.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  // READ ALL
   Future<List<Livre>> getLivres() async {
     final db = await instance.database;
 
-    final result = await db.query('livres');
+    final result = await db.query(
+      'livres',
+      orderBy: 'id DESC',
+    );
 
-    return result.map((json) => Livre.fromMap(json)).toList();
+    return result.map((map) => Livre.fromMap(map)).toList();
   }
 
-  // READ ONE
   Future<Livre?> getLivreById(int id) async {
     final db = await instance.database;
 
@@ -79,9 +79,12 @@ class DatabaseHelper {
     return null;
   }
 
-  // UPDATE
   Future<int> updateLivre(Livre livre) async {
     final db = await instance.database;
+
+    if (livre.id == null) {
+      throw Exception('Impossible de modifier un livre sans id');
+    }
 
     return await db.update(
       'livres',
@@ -91,7 +94,6 @@ class DatabaseHelper {
     );
   }
 
-  // DELETE
   Future<int> deleteLivre(int id) async {
     final db = await instance.database;
 
@@ -102,9 +104,8 @@ class DatabaseHelper {
     );
   }
 
-  Future close() async {
+  Future<void> close() async {
     final db = await instance.database;
-
-    db.close();
+    await db.close();
   }
 }
