@@ -16,6 +16,7 @@ class ListeLivresScreen extends StatefulWidget {
 
 class _ListeLivresScreenState extends State<ListeLivresScreen> {
   String searchQuery = '';
+  String selectedGenre = 'Tous';
 
   @override
   Widget build(BuildContext context) {
@@ -40,25 +41,31 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
       body: BlocBuilder<LivreBloc, LivreState>(
         builder: (context, state) {
           if (state is LivreLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is LivreError) {
-            return Center(
-              child: Text(state.message),
-            );
+            return Center(child: Text(state.message));
           }
 
           if (state is LivreLoaded) {
+            final genres = state.livres
+                .where((livre) => livre.genre != null && livre.genre!.isNotEmpty)
+                .map((livre) => livre.genre!)
+                .toSet()
+                .toList();
+
             final filteredLivres = state.livres.where((livre) {
-              return livre.titre
-                      .toLowerCase()
-                      .contains(searchQuery.toLowerCase()) ||
-                  livre.auteur
-                      .toLowerCase()
-                      .contains(searchQuery.toLowerCase());
+              final matchSearch =
+                  livre.titre.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                      livre.auteur
+                          .toLowerCase()
+                          .contains(searchQuery.toLowerCase());
+
+              final matchGenre =
+                  selectedGenre == 'Tous' || livre.genre == selectedGenre;
+
+              return matchSearch && matchGenre;
             }).toList();
 
             return Column(
@@ -80,6 +87,34 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                     },
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: DropdownButtonFormField<String>(
+                    value: selectedGenre,
+                    decoration: const InputDecoration(
+                      labelText: 'Filtrer par genre',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: 'Tous',
+                        child: Text('Tous'),
+                      ),
+                      ...genres.map(
+                        (genre) => DropdownMenuItem(
+                          value: genre,
+                          child: Text(genre),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedGenre = value ?? 'Tous';
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
                 Expanded(
                   child: filteredLivres.isEmpty
                       ? const Center(
@@ -109,9 +144,7 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                                   );
                                 },
                                 leading: CircleAvatar(
-                                  child: Text(
-                                    livre.titre[0].toUpperCase(),
-                                  ),
+                                  child: Text(livre.titre[0].toUpperCase()),
                                 ),
                                 title: Text(
                                   livre.titre,
@@ -120,8 +153,7 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                                   ),
                                 ),
                                 subtitle: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Auteur : ${livre.auteur}'),
                                     if (livre.genre != null)
@@ -134,9 +166,8 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                                   livre.lu
                                       ? Icons.check_circle
                                       : Icons.circle_outlined,
-                                  color: livre.lu
-                                      ? Colors.green
-                                      : Colors.grey,
+                                  color:
+                                      livre.lu ? Colors.green : Colors.grey,
                                 ),
                               ),
                             );
@@ -147,9 +178,7 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
             );
           }
 
-          return const Center(
-            child: Text('Chargement...'),
-          );
+          return const Center(child: Text('Chargement...'));
         },
       ),
       floatingActionButton: FloatingActionButton(
