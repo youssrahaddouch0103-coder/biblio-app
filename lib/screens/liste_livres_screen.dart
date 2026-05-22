@@ -5,6 +5,7 @@ import '../bloc/livre_bloc.dart';
 import '../bloc/livre_state.dart';
 import 'ajouter_livre_screen.dart';
 import 'detail_livre_screen.dart';
+import 'statistiques_screen.dart';
 
 class ListeLivresScreen extends StatefulWidget {
   const ListeLivresScreen({super.key});
@@ -22,15 +23,32 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
       appBar: AppBar(
         title: const Text('BiblioApp'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StatistiquesScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<LivreBloc, LivreState>(
         builder: (context, state) {
           if (state is LivreLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           if (state is LivreError) {
-            return Center(child: Text(state.message));
+            return Center(
+              child: Text(state.message),
+            );
           }
 
           if (state is LivreLoaded) {
@@ -102,7 +120,8 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                                   ),
                                 ),
                                 subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                   children: [
                                     Text('Auteur : ${livre.auteur}'),
                                     if (livre.genre != null)
@@ -115,8 +134,9 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                                   livre.lu
                                       ? Icons.check_circle
                                       : Icons.circle_outlined,
-                                  color:
-                                      livre.lu ? Colors.green : Colors.grey,
+                                  color: livre.lu
+                                      ? Colors.green
+                                      : Colors.grey,
                                 ),
                               ),
                             );
@@ -127,7 +147,9 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
             );
           }
 
-          return const Center(child: Text('Chargement...'));
+          return const Center(
+            child: Text('Chargement...'),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
