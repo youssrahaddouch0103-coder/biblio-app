@@ -5,14 +5,12 @@ import '../models/livre.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
-
   static Database? _database;
 
   DatabaseHelper._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-
     _database = await _initDB('biblio.db');
     return _database!;
   }
@@ -23,249 +21,93 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
   Future _createDB(Database db, int version) async {
-  await db.execute('''
-    CREATE TABLE livres(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      titre TEXT NOT NULL,
-      auteur TEXT NOT NULL,
-      annee INTEGER,
-      genre TEXT,
-      note REAL,
-      lu INTEGER NOT NULL
-    )
-  ''');
+    await db.execute('''
+      CREATE TABLE livres(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titre TEXT NOT NULL,
+        auteur TEXT NOT NULL,
+        annee INTEGER,
+        genre TEXT,
+        note REAL,
+        lu INTEGER NOT NULL,
+        favori INTEGER NOT NULL,
+        dateAjout TEXT,
+        dateModification TEXT
+      )
+    ''');
 
-  final livres = [
-    {
-      'titre': 'Le Petit Prince',
-      'auteur': 'Antoine de Saint-Exupéry',
-      'annee': 1943,
-      'genre': 'Conte',
-      'note': 5.0,
-      'lu': 1,
-    },
-    {
-      'titre': '1984',
-      'auteur': 'George Orwell',
-      'annee': 1949,
-      'genre': 'Science-fiction',
-      'note': 5.0,
-      'lu': 1,
-    },
-    {
-      'titre': 'Harry Potter à l’école des sorciers',
-      'auteur': 'J.K. Rowling',
-      'annee': 1997,
-      'genre': 'Fantasy',
-      'note': 4.5,
-      'lu': 1,
-    },
-    {
-      'titre': 'L’Étranger',
-      'auteur': 'Albert Camus',
-      'annee': 1942,
-      'genre': 'Roman',
-      'note': 4.0,
-      'lu': 1,
-    },
-    {
-      'titre': 'Les Misérables',
-      'auteur': 'Victor Hugo',
-      'annee': 1862,
-      'genre': 'Classique',
-      'note': 5.0,
-      'lu': 0,
-    },
-    {
-      'titre': 'Crime et Châtiment',
-      'auteur': 'Fiodor Dostoïevski',
-      'annee': 1866,
-      'genre': 'Philosophique',
-      'note': 4.8,
-      'lu': 1,
-    },
-    {
-      'titre': 'Le Seigneur des Anneaux',
-      'auteur': 'J.R.R. Tolkien',
-      'annee': 1954,
-      'genre': 'Fantasy',
-      'note': 5.0,
-      'lu': 1,
-    },
-    {
-      'titre': 'Pride and Prejudice',
-      'auteur': 'Jane Austen',
-      'annee': 1813,
-      'genre': 'Romance',
-      'note': 4.2,
-      'lu': 0,
-    },
-    {
-      'titre': 'The Hobbit',
-      'auteur': 'J.R.R. Tolkien',
-      'annee': 1937,
-      'genre': 'Fantasy',
-      'note': 4.7,
-      'lu': 1,
-    },
-    {
-      'titre': 'Don Quichotte',
-      'auteur': 'Miguel de Cervantes',
-      'annee': 1605,
-      'genre': 'Aventure',
-      'note': 4.0,
-      'lu': 0,
-    },
-    {
-      'titre': 'La Peste',
-      'auteur': 'Albert Camus',
-      'annee': 1947,
-      'genre': 'Roman',
-      'note': 4.3,
-      'lu': 1,
-    },
-    {
-      'titre': 'Dracula',
-      'auteur': 'Bram Stoker',
-      'annee': 1897,
-      'genre': 'Horreur',
-      'note': 4.1,
-      'lu': 0,
-    },
-    {
-      'titre': 'Frankenstein',
-      'auteur': 'Mary Shelley',
-      'annee': 1818,
-      'genre': 'Science-fiction',
-      'note': 4.0,
-      'lu': 1,
-    },
-    {
-      'titre': 'Le Comte de Monte-Cristo',
-      'auteur': 'Alexandre Dumas',
-      'annee': 1844,
-      'genre': 'Aventure',
-      'note': 4.9,
-      'lu': 1,
-    },
-    {
-      'titre': 'Jane Eyre',
-      'auteur': 'Charlotte Brontë',
-      'annee': 1847,
-      'genre': 'Romance',
-      'note': 4.1,
-      'lu': 0,
-    },
-    {
-      'titre': 'The Alchemist',
-      'auteur': 'Paulo Coelho',
-      'annee': 1988,
-      'genre': 'Développement personnel',
-      'note': 3.9,
-      'lu': 1,
-    },
-    {
-      'titre': 'Dune',
-      'auteur': 'Frank Herbert',
-      'annee': 1965,
-      'genre': 'Science-fiction',
-      'note': 4.9,
-      'lu': 1,
-    },
-    {
-      'titre': 'Sherlock Holmes',
-      'auteur': 'Arthur Conan Doyle',
-      'annee': 1892,
-      'genre': 'Policier',
-      'note': 4.5,
-      'lu': 1,
-    },
-    {
-      'titre': 'The Da Vinci Code',
-      'auteur': 'Dan Brown',
-      'annee': 2003,
-      'genre': 'Thriller',
-      'note': 4.0,
-      'lu': 0,
-    },
-    {
-      'titre': 'Percy Jackson',
-      'auteur': 'Rick Riordan',
-      'annee': 2005,
-      'genre': 'Fantasy',
-      'note': 4.4,
-      'lu': 1,
-    },
-    {
-      'titre': 'Twilight',
-      'auteur': 'Stephenie Meyer',
-      'annee': 2005,
-      'genre': 'Romance',
-      'note': 3.5,
-      'lu': 0,
-    },
-    {
-      'titre': 'The Hunger Games',
-      'auteur': 'Suzanne Collins',
-      'annee': 2008,
-      'genre': 'Science-fiction',
-      'note': 4.6,
-      'lu': 1,
-    },
-    {
-      'titre': 'The Chronicles of Narnia',
-      'auteur': 'C.S. Lewis',
-      'annee': 1950,
-      'genre': 'Fantasy',
-      'note': 4.3,
-      'lu': 0,
-    },
-    {
-      'titre': 'Moby Dick',
-      'auteur': 'Herman Melville',
-      'annee': 1851,
-      'genre': 'Aventure',
-      'note': 3.8,
-      'lu': 0,
-    },
-    {
-      'titre': 'War and Peace',
-      'auteur': 'Léon Tolstoï',
-      'annee': 1869,
-      'genre': 'Historique',
-      'note': 4.7,
-      'lu': 1,
-    },
-  ];
-
-  for (final livre in livres) {
-    await db.insert('livres', livre);
+    await _insertInitialData(db);
   }
-}
+
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE livres ADD COLUMN favori INTEGER NOT NULL DEFAULT 0');
+      await db.execute('ALTER TABLE livres ADD COLUMN dateAjout TEXT');
+      await db.execute('ALTER TABLE livres ADD COLUMN dateModification TEXT');
+    }
+  }
+
+  Future<void> _insertInitialData(Database db) async {
+    final now = DateTime.now().toIso8601String();
+
+    final livres = [
+      ['Le Petit Prince', 'Antoine de Saint-Exupéry', 1943, 'Conte', 5.0, 1, 1],
+      ['1984', 'George Orwell', 1949, 'Science-fiction', 5.0, 1, 1],
+      ['Harry Potter à l’école des sorciers', 'J.K. Rowling', 1997, 'Fantasy', 4.5, 1, 1],
+      ['L’Étranger', 'Albert Camus', 1942, 'Roman', 4.0, 1, 0],
+      ['Les Misérables', 'Victor Hugo', 1862, 'Classique', 5.0, 0, 1],
+      ['Crime et Châtiment', 'Fiodor Dostoïevski', 1866, 'Philosophique', 4.8, 1, 0],
+      ['Le Seigneur des Anneaux', 'J.R.R. Tolkien', 1954, 'Fantasy', 5.0, 1, 1],
+      ['Pride and Prejudice', 'Jane Austen', 1813, 'Romance', 4.2, 0, 0],
+      ['The Hobbit', 'J.R.R. Tolkien', 1937, 'Fantasy', 4.7, 1, 1],
+      ['Don Quichotte', 'Miguel de Cervantes', 1605, 'Aventure', 4.0, 0, 0],
+      ['La Peste', 'Albert Camus', 1947, 'Roman', 4.3, 1, 0],
+      ['Dracula', 'Bram Stoker', 1897, 'Horreur', 4.1, 0, 0],
+      ['Frankenstein', 'Mary Shelley', 1818, 'Science-fiction', 4.0, 1, 0],
+      ['Le Comte de Monte-Cristo', 'Alexandre Dumas', 1844, 'Aventure', 4.9, 1, 1],
+      ['Jane Eyre', 'Charlotte Brontë', 1847, 'Romance', 4.1, 0, 0],
+      ['The Alchemist', 'Paulo Coelho', 1988, 'Développement personnel', 3.9, 1, 0],
+      ['Dune', 'Frank Herbert', 1965, 'Science-fiction', 4.9, 1, 1],
+      ['Sherlock Holmes', 'Arthur Conan Doyle', 1892, 'Policier', 4.5, 1, 0],
+      ['The Da Vinci Code', 'Dan Brown', 2003, 'Thriller', 4.0, 0, 0],
+      ['Percy Jackson', 'Rick Riordan', 2005, 'Fantasy', 4.4, 1, 0],
+      ['Twilight', 'Stephenie Meyer', 2005, 'Romance', 3.5, 0, 0],
+      ['The Hunger Games', 'Suzanne Collins', 2008, 'Science-fiction', 4.6, 1, 1],
+      ['The Chronicles of Narnia', 'C.S. Lewis', 1950, 'Fantasy', 4.3, 0, 0],
+      ['Moby Dick', 'Herman Melville', 1851, 'Aventure', 3.8, 0, 0],
+      ['War and Peace', 'Léon Tolstoï', 1869, 'Historique', 4.7, 1, 0],
+    ];
+
+    for (final livre in livres) {
+      await db.insert('livres', {
+        'titre': livre[0],
+        'auteur': livre[1],
+        'annee': livre[2],
+        'genre': livre[3],
+        'note': livre[4],
+        'lu': livre[5],
+        'favori': livre[6],
+        'dateAjout': now,
+        'dateModification': null,
+      });
+    }
+  }
+
   Future<int> insertLivre(Livre livre) async {
     final db = await instance.database;
-
-    return await db.insert(
-      'livres',
-      livre.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return await db.insert('livres', livre.toMap());
   }
 
   Future<List<Livre>> getLivres() async {
     final db = await instance.database;
-
-    final result = await db.query(
-      'livres',
-      orderBy: 'id DESC',
-    );
-
+    final result = await db.query('livres', orderBy: 'titre ASC');
     return result.map((map) => Livre.fromMap(map)).toList();
   }
 
@@ -288,10 +130,6 @@ class DatabaseHelper {
   Future<int> updateLivre(Livre livre) async {
     final db = await instance.database;
 
-    if (livre.id == null) {
-      throw Exception('Impossible de modifier un livre sans id');
-    }
-
     return await db.update(
       'livres',
       livre.toMap(),
@@ -310,7 +148,7 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> close() async {
+  Future close() async {
     final db = await instance.database;
     await db.close();
   }
