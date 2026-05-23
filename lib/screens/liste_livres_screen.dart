@@ -23,10 +23,10 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('BiblioApp'),
-        centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.bar_chart),
+            tooltip: 'Statistiques',
+            icon: const Icon(Icons.insights_rounded),
             onPressed: () {
               Navigator.push(
                 context,
@@ -36,6 +36,7 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
               );
             },
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: BlocBuilder<LivreBloc, LivreState>(
@@ -49,16 +50,23 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
           }
 
           if (state is LivreLoaded) {
+            final totalLivres = state.livres.length;
+            final livresLus = state.livres.where((livre) => livre.lu).length;
+            final favoris = state.livres.where((livre) => livre.favori).length;
+
             final genres = state.livres
                 .where((livre) => livre.genre != null && livre.genre!.isNotEmpty)
                 .map((livre) => livre.genre!)
                 .toSet()
-                .toList();
+                .toList()
+              ..sort();
 
             final filteredLivres = state.livres.where((livre) {
+              final query = searchQuery.toLowerCase();
+
               final matchSearch =
-                  livre.titre.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                      livre.auteur.toLowerCase().contains(searchQuery.toLowerCase());
+                  livre.titre.toLowerCase().contains(query) ||
+                  livre.auteur.toLowerCase().contains(query);
 
               final matchGenre =
                   selectedGenre == 'Tous' || livre.genre == selectedGenre;
@@ -68,133 +76,51 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
 
             return Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Rechercher un livre...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        searchQuery = value;
-                      });
-                    },
-                  ),
+                _HeaderSection(
+                  totalLivres: totalLivres,
+                  livresLus: livresLus,
+                  favoris: favoris,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: DropdownButtonFormField<String>(
-                    initialValue: selectedGenre,
-                    decoration: const InputDecoration(
-                      labelText: 'Filtrer par genre',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: 'Tous',
-                        child: Text('Tous'),
-                      ),
-                      ...genres.map(
-                        (genre) => DropdownMenuItem(
-                          value: genre,
-                          child: Text(genre),
-                        ),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        selectedGenre = value ?? 'Tous';
-                      });
-                    },
-                  ),
+                _SearchAndFilterSection(
+                  selectedGenre: selectedGenre,
+                  genres: genres,
+                  onSearchChanged: (value) {
+                    setState(() {
+                      searchQuery = value;
+                    });
+                  },
+                  onGenreChanged: (value) {
+                    setState(() {
+                      selectedGenre = value ?? 'Tous';
+                    });
+                  },
                 ),
-                const SizedBox(height: 8),
                 Expanded(
                   child: filteredLivres.isEmpty
-                      ? const Center(
-                          child: Text(
-                            'Aucun livre trouvé.',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        )
+                      ? const _EmptyBooksState()
                       : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
                           itemCount: filteredLivres.length,
                           itemBuilder: (context, index) {
                             final livre = filteredLivres[index];
 
-                            return Card(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              child: ListTile(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DetailLivreScreen(livre: livre),
-                                    ),
-                                  );
-                                },
-                                leading: CircleAvatar(
-                                  child: Text(livre.titre[0].toUpperCase()),
-                                ),
-                                title: Text(
-                                  livre.titre,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                            return _BookModernCard(
+                              titre: livre.titre,
+                              auteur: livre.auteur,
+                              genre: livre.genre ?? 'Non classé',
+                              annee: livre.annee?.toString() ?? '—',
+                              note: livre.note?.toStringAsFixed(1) ?? '0.0',
+                              lu: livre.lu,
+                              favori: livre.favori,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailLivreScreen(livre: livre),
                                   ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Auteur : ${livre.auteur}'),
-                                    if (livre.genre != null)
-                                      Text('Genre : ${livre.genre}'),
-                                    if (livre.annee != null)
-                                      Text('Année : ${livre.annee}'),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${livre.note?.toStringAsFixed(1) ?? '0.0'} / 5',
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                trailing: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      livre.lu
-                                          ? Icons.check_circle
-                                          : Icons.circle_outlined,
-                                      color: livre.lu
-                                          ? Colors.green
-                                          : Colors.grey,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    if (livre.favori)
-                                      const Icon(
-                                        Icons.favorite,
-                                        color: Colors.red,
-                                        size: 18,
-                                      ),
-                                  ],
-                                ),
-                              ),
+                                );
+                              },
                             );
                           },
                         ),
@@ -206,8 +132,9 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
           return const Center(child: Text('Chargement...'));
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('Ajouter'),
         onPressed: () {
           Navigator.push(
             context,
@@ -216,6 +143,467 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _HeaderSection extends StatelessWidget {
+  final int totalLivres;
+  final int livresLus;
+  final int favoris;
+
+  const _HeaderSection({
+    required this.totalLivres,
+    required this.livresLus,
+    required this.favoris,
+  });
+
+  static const Color primaryColor = Color(0xFF25316D);
+  static const Color accentColor = Color(0xFFFFB84C);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            primaryColor,
+            Color(0xFF3949AB),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withValues(alpha: 0.18),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(
+                Icons.local_library_rounded,
+                color: accentColor,
+                size: 34,
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Ma bibliothèque personnelle',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 21,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Organise tes lectures, favoris et statistiques.',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.85),
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              _MiniStat(
+                label: 'Livres',
+                value: totalLivres.toString(),
+                icon: Icons.menu_book_rounded,
+              ),
+              _MiniStat(
+                label: 'Lus',
+                value: livresLus.toString(),
+                icon: Icons.check_circle_rounded,
+              ),
+              _MiniStat(
+                label: 'Favoris',
+                value: favoris.toString(),
+                icon: Icons.favorite_rounded,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+
+  const _MiniStat({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  static const Color accentColor = Color(0xFFFFB84C);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: accentColor, size: 22),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.78),
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchAndFilterSection extends StatelessWidget {
+  final String selectedGenre;
+  final List<String> genres;
+  final ValueChanged<String> onSearchChanged;
+  final ValueChanged<String?> onGenreChanged;
+
+  const _SearchAndFilterSection({
+    required this.selectedGenre,
+    required this.genres,
+    required this.onSearchChanged,
+    required this.onGenreChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Column(
+        children: [
+          TextField(
+            onChanged: onSearchChanged,
+            decoration: const InputDecoration(
+              hintText: 'Rechercher par titre ou auteur...',
+              prefixIcon: Icon(Icons.search_rounded),
+            ),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            initialValue: selectedGenre,
+            decoration: const InputDecoration(
+              prefixIcon: Icon(Icons.tune_rounded),
+              labelText: 'Filtrer par genre',
+            ),
+            items: [
+              const DropdownMenuItem(
+                value: 'Tous',
+                child: Text('Tous les genres'),
+              ),
+              ...genres.map(
+                (genre) => DropdownMenuItem(
+                  value: genre,
+                  child: Text(genre),
+                ),
+              ),
+            ],
+            onChanged: onGenreChanged,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BookModernCard extends StatelessWidget {
+  final String titre;
+  final String auteur;
+  final String genre;
+  final String annee;
+  final String note;
+  final bool lu;
+  final bool favori;
+  final VoidCallback onTap;
+
+  const _BookModernCard({
+    required this.titre,
+    required this.auteur,
+    required this.genre,
+    required this.annee,
+    required this.note,
+    required this.lu,
+    required this.favori,
+    required this.onTap,
+  });
+
+  static const Color primaryColor = Color(0xFF25316D);
+  static const Color softPurple = Color(0xFFEDE9FF);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(26),
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(26),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.045),
+                blurRadius: 14,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _BookCoverLetter(title: titre, favori: favori),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        titre,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: primaryColor,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        auteur,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _Badge(
+                            icon: Icons.category_rounded,
+                            label: genre,
+                            color: softPurple,
+                          ),
+                          _Badge(
+                            icon: Icons.calendar_month_rounded,
+                            label: annee,
+                            color: const Color(0xFFFFF1D6),
+                          ),
+                          _Badge(
+                            icon: Icons.star_rounded,
+                            label: '$note / 5',
+                            color: const Color(0xFFFFF8D6),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  children: [
+                    Icon(
+                      lu
+                          ? Icons.task_alt_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      color: lu ? Colors.green : Colors.grey,
+                    ),
+                    const SizedBox(height: 10),
+                    if (favori)
+                      const Icon(
+                        Icons.favorite_rounded,
+                        color: Colors.redAccent,
+                        size: 22,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BookCoverLetter extends StatelessWidget {
+  final String title;
+  final bool favori;
+
+  const _BookCoverLetter({
+    required this.title,
+    required this.favori,
+  });
+
+  static const Color primaryColor = Color(0xFF25316D);
+  static const Color accentColor = Color(0xFFFFB84C);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 58,
+      height: 82,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            primaryColor,
+            Color(0xFF5A61C9),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Stack(
+        children: [
+          Center(
+            child: Text(
+              title.isNotEmpty ? title[0].toUpperCase() : '?',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          if (favori)
+            const Positioned(
+              top: 6,
+              right: 6,
+              child: Icon(
+                Icons.favorite_rounded,
+                color: accentColor,
+                size: 16,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _Badge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  static const Color primaryColor = Color(0xFF25316D);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: primaryColor),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: const TextStyle(
+              color: primaryColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyBooksState extends StatelessWidget {
+  const _EmptyBooksState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.auto_stories_rounded,
+              size: 82,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Aucun livre trouvé',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF25316D),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Essaie une autre recherche ou ajoute un nouveau livre.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
