@@ -17,6 +17,10 @@ class ListeLivresScreen extends StatefulWidget {
 class _ListeLivresScreenState extends State<ListeLivresScreen> {
   String searchQuery = '';
   String selectedGenre = 'Tous';
+  String selectedSort = 'Titre';
+
+  bool favorisOnly = false;
+  bool lusOnly = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +75,23 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
               final matchGenre =
                   selectedGenre == 'Tous' || livre.genre == selectedGenre;
 
-              return matchSearch && matchGenre;
+              final matchFavori = !favorisOnly || livre.favori;
+              final matchLu = !lusOnly || livre.lu;
+
+              return matchSearch && matchGenre && matchFavori && matchLu;
             }).toList();
+
+            if (selectedSort == 'Titre') {
+              filteredLivres.sort((a, b) => a.titre.compareTo(b.titre));
+            } else if (selectedSort == 'Année') {
+              filteredLivres.sort(
+                (a, b) => (b.annee ?? 0).compareTo(a.annee ?? 0),
+              );
+            } else if (selectedSort == 'Note') {
+              filteredLivres.sort(
+                (a, b) => (b.note ?? 0).compareTo(a.note ?? 0),
+              );
+            }
 
             return Column(
               children: [
@@ -92,6 +111,26 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                   onGenreChanged: (value) {
                     setState(() {
                       selectedGenre = value ?? 'Tous';
+                    });
+                  },
+                ),
+                _AdvancedFilterSection(
+                  selectedSort: selectedSort,
+                  favorisOnly: favorisOnly,
+                  lusOnly: lusOnly,
+                  onSortChanged: (value) {
+                    setState(() {
+                      selectedSort = value ?? 'Titre';
+                    });
+                  },
+                  onFavorisChanged: (value) {
+                    setState(() {
+                      favorisOnly = value;
+                    });
+                  },
+                  onLusChanged: (value) {
+                    setState(() {
+                      lusOnly = value;
                     });
                   },
                 ),
@@ -338,6 +377,104 @@ class _SearchAndFilterSection extends StatelessWidget {
               ),
             ],
             onChanged: onGenreChanged,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdvancedFilterSection extends StatelessWidget {
+  final String selectedSort;
+  final bool favorisOnly;
+  final bool lusOnly;
+  final ValueChanged<String?> onSortChanged;
+  final ValueChanged<bool> onFavorisChanged;
+  final ValueChanged<bool> onLusChanged;
+
+  const _AdvancedFilterSection({
+    required this.selectedSort,
+    required this.favorisOnly,
+    required this.lusOnly,
+    required this.onSortChanged,
+    required this.onFavorisChanged,
+    required this.onLusChanged,
+  });
+
+  static const Color primaryColor = Color(0xFF25316D);
+  static const Color accentColor = Color(0xFFFFB84C);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      child: Column(
+        children: [
+          DropdownButtonFormField<String>(
+            initialValue: selectedSort,
+            decoration: const InputDecoration(
+              prefixIcon: Icon(Icons.sort_rounded),
+              labelText: 'Trier par',
+            ),
+            items: const [
+              DropdownMenuItem(
+                value: 'Titre',
+                child: Text('Titre'),
+              ),
+              DropdownMenuItem(
+                value: 'Année',
+                child: Text('Année récente'),
+              ),
+              DropdownMenuItem(
+                value: 'Note',
+                child: Text('Meilleure note'),
+              ),
+            ],
+            onChanged: onSortChanged,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: FilterChip(
+                  selected: favorisOnly,
+                  label: const Text('Favoris'),
+                  avatar: Icon(
+                    Icons.favorite_rounded,
+                    color: favorisOnly ? Colors.white : Colors.redAccent,
+                    size: 18,
+                  ),
+                  selectedColor: primaryColor,
+                  checkmarkColor: Colors.white,
+                  backgroundColor: Colors.white,
+                  labelStyle: TextStyle(
+                    color: favorisOnly ? Colors.white : primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onSelected: onFavorisChanged,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilterChip(
+                  selected: lusOnly,
+                  label: const Text('Livres lus'),
+                  avatar: Icon(
+                    Icons.check_circle_rounded,
+                    color: lusOnly ? Colors.white : Colors.green,
+                    size: 18,
+                  ),
+                  selectedColor: accentColor,
+                  checkmarkColor: primaryColor,
+                  backgroundColor: Colors.white,
+                  labelStyle: const TextStyle(
+                    color: primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onSelected: onLusChanged,
+                ),
+              ),
+            ],
           ),
         ],
       ),

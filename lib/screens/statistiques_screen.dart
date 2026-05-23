@@ -32,93 +32,67 @@ class StatistiquesScreen extends StatelessWidget {
 
           if (state is LivreLoaded) {
             final totalLivres = state.livres.length;
-
-            final livresLus = state.livres
-                .where((livre) => livre.lu)
-                .length;
-
-            final livresNonLus =
-                totalLivres - livresLus;
-
-            final livresFavoris = state.livres
-                .where((livre) => livre.favori)
-                .length;
+            final livresLus = state.livres.where((livre) => livre.lu).length;
+            final livresNonLus = totalLivres - livresLus;
+            final livresFavoris =
+                state.livres.where((livre) => livre.favori).length;
 
             final genresList = state.livres
-                .where((livre) =>
-                    livre.genre != null &&
-                    livre.genre!.isNotEmpty)
+                .where((livre) => livre.genre != null && livre.genre!.isNotEmpty)
                 .map((livre) => livre.genre!)
                 .toList();
 
-            final genresDifferents =
-                genresList.toSet().length;
+            final genresDifferents = genresList.toSet().length;
 
-            final livresAvecNote = state.livres
-                .where((livre) => livre.note != null)
-                .toList();
+            final livresAvecNote =
+                state.livres.where((livre) => livre.note != null).toList();
 
-            final moyenneNotes =
-                livresAvecNote.isEmpty
-                    ? 0.0
-                    : livresAvecNote
-                            .map((livre) => livre.note!)
-                            .reduce((a, b) => a + b) /
-                        livresAvecNote.length;
+            final moyenneNotes = livresAvecNote.isEmpty
+                ? 0.0
+                : livresAvecNote
+                        .map((livre) => livre.note!)
+                        .reduce((a, b) => a + b) /
+                    livresAvecNote.length;
 
-            final Map<String, int> livresParGenre =
-                {};
+            final Map<String, int> livresParGenre = {};
 
             for (final genre in genresList) {
-              livresParGenre[genre] =
-                  (livresParGenre[genre] ?? 0) + 1;
+              livresParGenre[genre] = (livresParGenre[genre] ?? 0) + 1;
             }
 
             return SingleChildScrollView(
-              padding:
-                  const EdgeInsets.fromLTRB(
-                      16, 12, 16, 30),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 30),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     width: double.infinity,
-                    padding:
-                        const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      gradient:
-                          const LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
                           primaryColor,
                           Color(0xFF3949AB),
                         ],
                         begin: Alignment.topLeft,
-                        end:
-                            Alignment.bottomRight,
+                        end: Alignment.bottomRight,
                       ),
-                      borderRadius:
-                          BorderRadius.circular(32),
+                      borderRadius: BorderRadius.circular(32),
                       boxShadow: [
                         BoxShadow(
-                          color: primaryColor
-                              .withValues(
-                                  alpha: 0.18),
+                          color: primaryColor.withValues(alpha: 0.18),
                           blurRadius: 18,
-                          offset:
-                              const Offset(0, 10),
+                          offset: const Offset(0, 10),
                         ),
                       ],
                     ),
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Row(
                           children: [
                             Icon(
-                              Icons
-                                  .analytics_rounded,
+                              Icons.analytics_rounded,
                               color: accentColor,
                               size: 36,
                             ),
@@ -126,12 +100,9 @@ class StatistiquesScreen extends StatelessWidget {
                             Text(
                               'Dashboard',
                               style: TextStyle(
-                                color:
-                                    Colors.white,
+                                color: Colors.white,
                                 fontSize: 28,
-                                fontWeight:
-                                    FontWeight
-                                        .bold,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
@@ -147,13 +118,10 @@ class StatistiquesScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 26),
-
                   GridView.count(
                     shrinkWrap: true,
-                    physics:
-                        const NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 2,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
@@ -161,115 +129,80 @@ class StatistiquesScreen extends StatelessWidget {
                     children: [
                       _ModernStatCard(
                         title: 'Total',
-                        value:
-                            totalLivres.toString(),
-                        icon:
-                            Icons.menu_book_rounded,
+                        value: totalLivres.toString(),
+                        icon: Icons.menu_book_rounded,
                         color: Colors.indigo,
                       ),
                       _ModernStatCard(
                         title: 'Livres lus',
-                        value:
-                            livresLus.toString(),
-                        icon: Icons
-                            .check_circle_rounded,
+                        value: livresLus.toString(),
+                        icon: Icons.check_circle_rounded,
                         color: Colors.green,
                       ),
                       _ModernStatCard(
                         title: 'Non lus',
-                        value: livresNonLus
-                            .toString(),
-                        icon: Icons
-                            .radio_button_unchecked_rounded,
+                        value: livresNonLus.toString(),
+                        icon: Icons.radio_button_unchecked_rounded,
                         color: Colors.grey,
                       ),
                       _ModernStatCard(
                         title: 'Favoris',
-                        value:
-                            livresFavoris
-                                .toString(),
-                        icon:
-                            Icons.favorite_rounded,
+                        value: livresFavoris.toString(),
+                        icon: Icons.favorite_rounded,
                         color: Colors.red,
                       ),
                       _ModernStatCard(
                         title: 'Genres',
-                        value:
-                            genresDifferents
-                                .toString(),
-                        icon:
-                            Icons.category_rounded,
-                        color:
-                            Colors.deepPurple,
+                        value: genresDifferents.toString(),
+                        icon: Icons.category_rounded,
+                        color: Colors.deepPurple,
                       ),
                       _ModernStatCard(
                         title: 'Note moyenne',
-                        value:
-                            '${moyenneNotes.toStringAsFixed(1)}',
-                        icon:
-                            Icons.star_rounded,
+                        value: moyenneNotes.toStringAsFixed(1),
+                        icon: Icons.star_rounded,
                         color: Colors.orange,
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 30),
-
                   const Text(
                     'Répartition par genre',
                     style: TextStyle(
                       color: primaryColor,
                       fontSize: 24,
-                      fontWeight:
-                          FontWeight.bold,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   const SizedBox(height: 18),
-
                   if (livresParGenre.isEmpty)
                     Container(
                       width: double.infinity,
-                      padding:
-                          const EdgeInsets.all(
-                              24),
+                      padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(
-                                24),
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black
-                                .withValues(
-                                    alpha: 0.04),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 14,
-                            offset:
-                                const Offset(
-                                    0, 8),
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
                       child: const Center(
                         child: Text(
                           'Aucun genre disponible',
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
                     )
                   else
-                    ...livresParGenre.entries
-                        .map(
-                      (entry) =>
-                          _GenreCard(
+                    ...livresParGenre.entries.map(
+                      (entry) => _GenreCard(
                         genre: entry.key,
                         count: entry.value,
-                        total:
-                            totalLivres == 0
-                                ? 1
-                                : totalLivres,
+                        total: totalLivres == 0 ? 1 : totalLivres,
                       ),
                     ),
                 ],
@@ -305,33 +238,26 @@ class _ModernStatCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color:
-                Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 52,
             height: 52,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.15),
-              borderRadius:
-                  BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(
-              icon,
-              color: color,
-            ),
+            child: Icon(icon, color: color),
           ),
           const Spacer(),
           Text(
@@ -376,20 +302,17 @@ class _GenreCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color:
-                Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -403,31 +326,25 @@ class _GenreCard extends StatelessWidget {
                   genre,
                   style: const TextStyle(
                     fontSize: 17,
-                    fontWeight:
-                        FontWeight.bold,
+                    fontWeight: FontWeight.bold,
                     color: Color(0xFF25316D),
                   ),
                 ),
               ),
               Text(
                 '$count livre(s)',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: 16),
           ClipRRect(
-            borderRadius:
-                BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20),
             child: LinearProgressIndicator(
               value: percentage,
               minHeight: 10,
-              backgroundColor:
-                  Colors.grey.shade200,
-              valueColor:
-                  const AlwaysStoppedAnimation(
+              backgroundColor: Colors.grey.shade200,
+              valueColor: const AlwaysStoppedAnimation(
                 Color(0xFFFFB84C),
               ),
             ),
