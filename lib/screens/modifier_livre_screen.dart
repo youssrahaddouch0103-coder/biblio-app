@@ -16,12 +16,10 @@ class ModifierLivreScreen extends StatefulWidget {
   });
 
   @override
-  State<ModifierLivreScreen> createState() =>
-      _ModifierLivreScreenState();
+  State<ModifierLivreScreen> createState() => _ModifierLivreScreenState();
 }
 
-class _ModifierLivreScreenState
-    extends State<ModifierLivreScreen> {
+class _ModifierLivreScreenState extends State<ModifierLivreScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _titreController;
@@ -32,6 +30,11 @@ class _ModifierLivreScreenState
   late double _note;
   late bool _lu;
   late bool _favori;
+
+  static const Color primaryColor = Color(0xFF1E1E2E);
+  static const Color secondaryColor = Color(0xFF2D3250);
+  static const Color accentColor = Color(0xFFF6B17A);
+  static const Color backgroundColor = Color(0xFFF8F5F2);
 
   final List<String> _genres = [
     'Roman',
@@ -47,19 +50,12 @@ class _ModifierLivreScreenState
     'Autre',
   ];
 
-  static const Color primaryColor = Color(0xFF25316D);
-  static const Color accentColor = Color(0xFFFFB84C);
-
   @override
   void initState() {
     super.initState();
 
-    _titreController =
-        TextEditingController(text: widget.livre.titre);
-
-    _auteurController =
-        TextEditingController(text: widget.livre.auteur);
-
+    _titreController = TextEditingController(text: widget.livre.titre);
+    _auteurController = TextEditingController(text: widget.livre.auteur);
     _anneeController = TextEditingController(
       text: widget.livre.annee?.toString() ?? '',
     );
@@ -93,13 +89,10 @@ class _ModifierLivreScreenState
         note: _note,
         lu: _lu,
         favori: _favori,
-        dateModification:
-            DateTime.now().toIso8601String(),
+        dateModification: DateTime.now().toIso8601String(),
       );
 
-      context
-          .read<LivreBloc>()
-          .add(UpdateLivre(updatedLivre));
+      context.read<LivreBloc>().add(UpdateLivre(updatedLivre));
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -136,15 +129,17 @@ class _ModifierLivreScreenState
     );
   }
 
-  Widget _buildCard({required Widget child}) {
+  Widget _buildCard({
+    required Widget child,
+  }) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: 0.045),
             blurRadius: 18,
             offset: const Offset(0, 10),
           ),
@@ -165,17 +160,17 @@ class _ModifierLivreScreenState
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7FB),
-        borderRadius: BorderRadius.circular(18),
+        color: const Color(0xFFF6F1EB),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
           Container(
-            width: 46,
-            height: 46,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(14),
+              color: accentColor.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               icon,
@@ -185,8 +180,7 @@ class _ModifierLivreScreenState
           const SizedBox(width: 14),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
@@ -210,6 +204,7 @@ class _ModifierLivreScreenState
           Switch(
             value: value,
             activeThumbColor: primaryColor,
+            activeTrackColor: accentColor,
             onChanged: onChanged,
           ),
         ],
@@ -220,16 +215,9 @@ class _ModifierLivreScreenState
   Widget _buildGenreDropdown() {
     return DropdownButtonFormField<String>(
       initialValue: _genre,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: 'Genre',
-        prefixIcon:
-            const Icon(Icons.category_rounded),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide.none,
-        ),
+        prefixIcon: Icon(Icons.category_rounded),
       ),
       items: _genres.map((genre) {
         return DropdownMenuItem(
@@ -247,8 +235,7 @@ class _ModifierLivreScreenState
 
   Widget _buildRatingSection() {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Note du livre',
@@ -258,19 +245,17 @@ class _ModifierLivreScreenState
             fontSize: 16,
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
         Row(
           children: [
             Container(
               padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8,
+                horizontal: 16,
+                vertical: 9,
               ),
               decoration: BoxDecoration(
-                color:
-                    accentColor.withValues(alpha: 0.18),
-                borderRadius:
-                    BorderRadius.circular(14),
+                color: accentColor.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 '${_note.toStringAsFixed(1)} / 5',
@@ -301,8 +286,7 @@ class _ModifierLivreScreenState
           max: 5,
           divisions: 10,
           activeColor: primaryColor,
-          inactiveColor:
-              accentColor.withValues(alpha: 0.3),
+          inactiveColor: accentColor.withValues(alpha: 0.28),
           label: _note.toStringAsFixed(1),
           onChanged: (value) {
             setState(() {
@@ -317,54 +301,51 @@ class _ModifierLivreScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: const Text('Modifier le livre'),
       ),
       body: SingleChildScrollView(
-        padding:
-            const EdgeInsets.fromLTRB(16, 10, 16, 30),
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 30),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(26),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
                       primaryColor,
-                      Color(0xFF3949AB),
+                      secondaryColor,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius:
-                      BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(34),
                   boxShadow: [
                     BoxShadow(
-                      color: primaryColor
-                          .withValues(alpha: 0.18),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
+                      color: Colors.black.withValues(alpha: 0.12),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
                     ),
                   ],
                 ),
                 child: const Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
                       Icons.edit_rounded,
                       color: accentColor,
-                      size: 42,
+                      size: 44,
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 18),
                     Text(
                       'Modifier le livre',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 25,
+                        fontSize: 27,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -379,13 +360,8 @@ class _ModifierLivreScreenState
                   ],
                 ),
               ),
-
-              const SizedBox(height: 24),
-
-              _buildSectionTitle(
-                'Informations principales',
-              ),
-
+              const SizedBox(height: 26),
+              _buildSectionTitle('Informations principales'),
               _buildCard(
                 child: Column(
                   children: [
@@ -394,8 +370,7 @@ class _ModifierLivreScreenState
                       label: 'Titre',
                       icon: Icons.book_rounded,
                       validator: (value) =>
-                          Validators.requiredField(
-                              value, 'Le titre'),
+                          Validators.requiredField(value, 'Le titre'),
                     ),
                     const SizedBox(height: 18),
                     CustomTextField(
@@ -403,48 +378,36 @@ class _ModifierLivreScreenState
                       label: 'Auteur',
                       icon: Icons.person_rounded,
                       validator: (value) =>
-                          Validators.requiredField(
-                              value, 'L’auteur'),
+                          Validators.requiredField(value, 'L’auteur'),
                     ),
                     const SizedBox(height: 18),
                     CustomTextField(
                       controller: _anneeController,
                       label: 'Année',
-                      icon:
-                          Icons.calendar_today_rounded,
-                      keyboardType:
-                          TextInputType.number,
-                      validator:
-                          Validators.validateYear,
+                      icon: Icons.calendar_today_rounded,
+                      keyboardType: TextInputType.number,
+                      validator: Validators.validateYear,
                     ),
                     const SizedBox(height: 18),
                     _buildGenreDropdown(),
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               _buildSectionTitle('Évaluation'),
-
               _buildCard(
                 child: _buildRatingSection(),
               ),
-
               const SizedBox(height: 24),
-
               _buildSectionTitle('Préférences'),
-
               _buildCard(
                 child: Column(
                   children: [
                     _buildSwitchTile(
                       title: 'Livre lu',
-                      subtitle:
-                          'Marquer ce livre comme déjà lu',
+                      subtitle: 'Marquer ce livre comme déjà lu',
                       value: _lu,
-                      icon:
-                          Icons.check_circle_rounded,
+                      icon: Icons.check_circle_rounded,
                       onChanged: (value) {
                         setState(() {
                           _lu = value;
@@ -452,13 +415,10 @@ class _ModifierLivreScreenState
                       },
                     ),
                     _buildSwitchTile(
-                      title:
-                          'Ajouter aux favoris',
-                      subtitle:
-                          'Afficher dans les livres favoris',
+                      title: 'Ajouter aux favoris',
+                      subtitle: 'Afficher dans les livres favoris',
                       value: _favori,
-                      icon:
-                          Icons.favorite_rounded,
+                      icon: Icons.favorite_rounded,
                       onChanged: (value) {
                         setState(() {
                           _favori = value;
@@ -468,39 +428,19 @@ class _ModifierLivreScreenState
                   ],
                 ),
               ),
-
               const SizedBox(height: 32),
-
               SizedBox(
                 width: double.infinity,
                 height: 58,
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   onPressed: _updateLivre,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape:
-                        RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(20),
+                  icon: const Icon(Icons.save_rounded),
+                  label: const Text(
+                    'Enregistrer les modifications',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.save_rounded),
-                      SizedBox(width: 10),
-                      Text(
-                        'Enregistrer les modifications',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight:
-                              FontWeight.bold,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),

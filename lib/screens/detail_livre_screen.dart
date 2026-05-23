@@ -14,14 +14,17 @@ class DetailLivreScreen extends StatelessWidget {
     required this.livre,
   });
 
-  static const Color primaryColor = Color(0xFF25316D);
-  static const Color accentColor = Color(0xFFFFB84C);
+  static const Color primaryColor = Color(0xFF1E1E2E);
+  static const Color secondaryColor = Color(0xFF2D3250);
+  static const Color accentColor = Color(0xFFF6B17A);
+  static const Color backgroundColor = Color(0xFFF8F5F2);
 
   void _confirmerSuppression(BuildContext context) {
     showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -32,11 +35,14 @@ class DetailLivreScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Annuler'),
+              child: const Text(
+                'Annuler',
+                style: TextStyle(color: primaryColor),
+              ),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
@@ -61,7 +67,7 @@ class DetailLivreScreen extends StatelessWidget {
                   ),
                 );
               },
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Icons.delete_rounded),
               label: const Text('Supprimer'),
             ),
           ],
@@ -90,17 +96,16 @@ class DetailLivreScreen extends StatelessWidget {
         vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
+        color: color.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(50),
+        border: Border.all(
+          color: color.withValues(alpha: 0.35),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 18,
-            color: color,
-          ),
+          Icon(icon, size: 18, color: color),
           const SizedBox(width: 6),
           Text(
             label,
@@ -120,6 +125,8 @@ class DetailLivreScreen extends StatelessWidget {
     required String value,
     Color? iconColor,
   }) {
+    final currentColor = iconColor ?? primaryColor;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(18),
@@ -128,8 +135,8 @@ class DetailLivreScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 14,
+            color: Colors.black.withValues(alpha: 0.045),
+            blurRadius: 16,
             offset: const Offset(0, 8),
           ),
         ],
@@ -140,12 +147,12 @@ class DetailLivreScreen extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: (iconColor ?? primaryColor).withValues(alpha: 0.14),
+              color: currentColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               icon,
-              color: iconColor ?? primaryColor,
+              color: currentColor,
             ),
           ),
           const SizedBox(width: 16),
@@ -181,23 +188,23 @@ class DetailLivreScreen extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: 130,
-        height: 180,
+        width: 132,
+        height: 184,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
               primaryColor,
-              Color(0xFF3949AB),
+              secondaryColor,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: primaryColor.withValues(alpha: 0.25),
-              blurRadius: 18,
-              offset: const Offset(0, 10),
+              color: Colors.black.withValues(alpha: 0.22),
+              blurRadius: 22,
+              offset: const Offset(0, 12),
             ),
           ],
         ),
@@ -208,7 +215,7 @@ class DetailLivreScreen extends StatelessWidget {
                 livre.titre.isNotEmpty ? livre.titre[0].toUpperCase() : '?',
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 56,
+                  fontSize: 58,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -223,6 +230,18 @@ class DetailLivreScreen extends StatelessWidget {
                   size: 26,
                 ),
               ),
+            Positioned(
+              bottom: 14,
+              left: 18,
+              right: 18,
+              child: Container(
+                height: 5,
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -234,6 +253,7 @@ class DetailLivreScreen extends StatelessWidget {
     final note = livre.note?.toStringAsFixed(1) ?? '0.0';
 
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: const Text('Détails du livre'),
         actions: [
@@ -255,17 +275,24 @@ class DetailLivreScreen extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(26),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
                     primaryColor,
-                    Color(0xFF3949AB),
+                    secondaryColor,
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(34),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
@@ -273,7 +300,7 @@ class DetailLivreScreen extends StatelessWidget {
                     tag: 'livre_${livre.titre}',
                     child: _buildBookCover(),
                   ),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 24),
                   Text(
                     livre.titre,
                     textAlign: TextAlign.center,
@@ -287,12 +314,12 @@ class DetailLivreScreen extends StatelessWidget {
                   Text(
                     livre.auteur,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white70,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.72),
                       fontSize: 17,
                     ),
                   ),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 24),
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
@@ -343,7 +370,9 @@ class DetailLivreScreen extends StatelessWidget {
               value: '$note / 5',
             ),
             _buildInfoCard(
-              icon: livre.lu ? Icons.check_circle_rounded : Icons.circle_outlined,
+              icon: livre.lu
+                  ? Icons.check_circle_rounded
+                  : Icons.circle_outlined,
               iconColor: livre.lu ? Colors.green : Colors.grey,
               title: 'Lecture',
               value: livre.lu ? 'Livre lu' : 'Non lu',
@@ -352,7 +381,7 @@ class DetailLivreScreen extends StatelessWidget {
               icon: livre.favori
                   ? Icons.favorite_rounded
                   : Icons.favorite_border_rounded,
-              iconColor: livre.favori ? Colors.red : Colors.grey,
+              iconColor: livre.favori ? Colors.redAccent : Colors.grey,
               title: 'Favori',
               value: livre.favori ? 'Ajouté aux favoris' : 'Non favori',
             ),
@@ -375,20 +404,7 @@ class DetailLivreScreen extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () => _ouvrirModification(context),
                 icon: const Icon(Icons.edit_rounded),
-                label: const Text(
-                  'Modifier le livre',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+                label: const Text('Modifier le livre'),
               ),
             ),
           ],
