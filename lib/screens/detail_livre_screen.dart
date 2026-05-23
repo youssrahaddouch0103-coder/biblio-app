@@ -40,29 +40,23 @@ class DetailLivreScreen extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                final scaffoldMessenger =
-                    ScaffoldMessenger.of(context);
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-                context
-                    .read<LivreBloc>()
-                    .add(DeleteLivre(livre.id!));
+                context.read<LivreBloc>().add(DeleteLivre(livre.id!));
 
                 Navigator.pop(dialogContext);
                 Navigator.pop(context);
 
                 scaffoldMessenger.showSnackBar(
                   SnackBar(
-                    behavior:
-                        SnackBarBehavior.floating,
+                    behavior: SnackBarBehavior.floating,
                     backgroundColor: primaryColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(18),
                     ),
                     content: const Text(
                       'Livre supprimé avec succès',
-                      style:
-                          TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 );
@@ -80,8 +74,7 @@ class DetailLivreScreen extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ModifierLivreScreen(livre: livre),
+        builder: (context) => ModifierLivreScreen(livre: livre),
       ),
     );
   }
@@ -147,8 +140,7 @@ class DetailLivreScreen extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: (iconColor ?? primaryColor)
-                  .withValues(alpha: 0.14),
+              color: (iconColor ?? primaryColor).withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
@@ -159,8 +151,7 @@ class DetailLivreScreen extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
@@ -187,60 +178,60 @@ class DetailLivreScreen extends StatelessWidget {
   }
 
   Widget _buildBookCover() {
-    return Container(
-      width: 130,
-      height: 180,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            primaryColor,
-            Color(0xFF3949AB),
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: 130,
+        height: 180,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              primaryColor,
+              Color(0xFF3949AB),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: primaryColor.withValues(alpha: 0.25),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
+            ),
           ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
         ),
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: primaryColor.withValues(alpha: 0.25),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Center(
-            child: Text(
-              livre.titre.isNotEmpty
-                  ? livre.titre[0].toUpperCase()
-                  : '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 56,
-                fontWeight: FontWeight.bold,
+        child: Stack(
+          children: [
+            Center(
+              child: Text(
+                livre.titre.isNotEmpty ? livre.titre[0].toUpperCase() : '?',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 56,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          if (livre.favori)
-            const Positioned(
-              top: 12,
-              right: 12,
-              child: Icon(
-                Icons.favorite_rounded,
-                color: accentColor,
-                size: 26,
+            if (livre.favori)
+              const Positioned(
+                top: 12,
+                right: 12,
+                child: Icon(
+                  Icons.favorite_rounded,
+                  color: accentColor,
+                  size: 26,
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final note =
-        livre.note?.toStringAsFixed(1) ?? '0.0';
+    final note = livre.note?.toStringAsFixed(1) ?? '0.0';
 
     return Scaffold(
       appBar: AppBar(
@@ -248,21 +239,18 @@ class DetailLivreScreen extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'Modifier',
-            onPressed: () =>
-                _ouvrirModification(context),
+            onPressed: () => _ouvrirModification(context),
             icon: const Icon(Icons.edit_rounded),
           ),
           IconButton(
             tooltip: 'Supprimer',
-            onPressed: () =>
-                _confirmerSuppression(context),
+            onPressed: () => _confirmerSuppression(context),
             icon: const Icon(Icons.delete_rounded),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding:
-            const EdgeInsets.fromLTRB(16, 12, 16, 30),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 30),
         child: Column(
           children: [
             Container(
@@ -277,12 +265,14 @@ class DetailLivreScreen extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius:
-                    BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(32),
               ),
               child: Column(
                 children: [
-                  _buildBookCover(),
+                  Hero(
+                    tag: 'livre_${livre.titre}',
+                    child: _buildBookCover(),
+                  ),
                   const SizedBox(height: 22),
                   Text(
                     livre.titre,
@@ -310,9 +300,7 @@ class DetailLivreScreen extends StatelessWidget {
                     children: [
                       _buildBadge(
                         icon: Icons.category_rounded,
-                        label:
-                            livre.genre ??
-                                'Non classé',
+                        label: livre.genre ?? 'Non classé',
                         color: accentColor,
                       ),
                       _buildBadge(
@@ -323,95 +311,69 @@ class DetailLivreScreen extends StatelessWidget {
                       _buildBadge(
                         icon: livre.lu
                             ? Icons.check_circle_rounded
-                            : Icons
-                                .radio_button_unchecked_rounded,
-                        label:
-                            livre.lu ? 'Lu' : 'Non lu',
-                        color: livre.lu
-                            ? Colors.green
-                            : Colors.grey,
+                            : Icons.radio_button_unchecked_rounded,
+                        label: livre.lu ? 'Lu' : 'Non lu',
+                        color: livre.lu ? Colors.green : Colors.grey,
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
-
             _buildInfoCard(
               icon: Icons.person_rounded,
               title: 'Auteur',
               value: livre.auteur,
             ),
-
             _buildInfoCard(
               icon: Icons.calendar_today_rounded,
               title: 'Année',
-              value: livre.annee?.toString() ??
-                  'Non renseignée',
+              value: livre.annee?.toString() ?? 'Non renseignée',
             ),
-
             _buildInfoCard(
               icon: Icons.category_rounded,
               title: 'Genre',
-              value:
-                  livre.genre ?? 'Non renseigné',
+              value: livre.genre ?? 'Non renseigné',
             ),
-
             _buildInfoCard(
               icon: Icons.star_rounded,
               iconColor: Colors.orange,
               title: 'Note',
               value: '$note / 5',
             ),
-
             _buildInfoCard(
-              icon: livre.lu
-                  ? Icons.check_circle_rounded
-                  : Icons.circle_outlined,
-              iconColor:
-                  livre.lu ? Colors.green : Colors.grey,
+              icon: livre.lu ? Icons.check_circle_rounded : Icons.circle_outlined,
+              iconColor: livre.lu ? Colors.green : Colors.grey,
               title: 'Lecture',
-              value:
-                  livre.lu ? 'Livre lu' : 'Non lu',
+              value: livre.lu ? 'Livre lu' : 'Non lu',
             ),
-
             _buildInfoCard(
               icon: livre.favori
                   ? Icons.favorite_rounded
                   : Icons.favorite_border_rounded,
-              iconColor: livre.favori
-                  ? Colors.red
-                  : Colors.grey,
+              iconColor: livre.favori ? Colors.red : Colors.grey,
               title: 'Favori',
-              value: livre.favori
-                  ? 'Ajouté aux favoris'
-                  : 'Non favori',
+              value: livre.favori ? 'Ajouté aux favoris' : 'Non favori',
             ),
-
             if (livre.dateAjout != null)
               _buildInfoCard(
                 icon: Icons.access_time_rounded,
                 title: 'Date d’ajout',
                 value: livre.dateAjout!,
               ),
-
             if (livre.dateModification != null)
               _buildInfoCard(
                 icon: Icons.update_rounded,
                 title: 'Dernière modification',
                 value: livre.dateModification!,
               ),
-
             const SizedBox(height: 18),
-
             SizedBox(
               width: double.infinity,
               height: 58,
               child: ElevatedButton.icon(
-                onPressed: () =>
-                    _ouvrirModification(context),
+                onPressed: () => _ouvrirModification(context),
                 icon: const Icon(Icons.edit_rounded),
                 label: const Text(
                   'Modifier le livre',
@@ -424,8 +386,7 @@ class DetailLivreScreen extends StatelessWidget {
                   backgroundColor: primaryColor,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
               ),

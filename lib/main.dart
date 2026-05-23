@@ -5,14 +5,16 @@ import 'bloc/livre_bloc.dart';
 import 'bloc/livre_event.dart';
 import 'database/database_helper.dart';
 import 'repositories/livre_repository.dart';
-import 'screens/liste_livres_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   final repository = LivreRepository(
     databaseHelper: DatabaseHelper.instance,
   );
 
-  runApp(MyApp(repository: repository));
+  runApp(
+    MyApp(repository: repository),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -30,20 +32,26 @@ class MyApp extends StatelessWidget {
     const backgroundColor = Color(0xFFF7F3EA);
 
     return BlocProvider(
-      create: (_) => LivreBloc(repository)..add(LoadLivres()),
+      create: (_) =>
+          LivreBloc(repository)..add(LoadLivres()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'BiblioApp',
         theme: ThemeData(
           useMaterial3: true,
-          scaffoldBackgroundColor: backgroundColor,
+
+          scaffoldBackgroundColor:
+              backgroundColor,
+
           colorScheme: ColorScheme.fromSeed(
             seedColor: primaryColor,
             primary: primaryColor,
             secondary: secondaryColor,
             surface: Colors.white,
           ),
+
           fontFamily: 'Roboto',
+
           appBarTheme: const AppBarTheme(
             backgroundColor: backgroundColor,
             foregroundColor: primaryColor,
@@ -55,35 +63,51 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+
           cardTheme: CardThemeData(
             color: Colors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius:
+                  BorderRadius.circular(24),
             ),
           ),
-          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+
+          floatingActionButtonTheme:
+              const FloatingActionButtonThemeData(
             backgroundColor: primaryColor,
             foregroundColor: Colors.white,
             elevation: 4,
           ),
-          inputDecorationTheme: InputDecorationTheme(
+
+          inputDecorationTheme:
+              InputDecorationTheme(
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
+
+            contentPadding:
+                const EdgeInsets.symmetric(
               horizontal: 18,
               vertical: 16,
             ),
+
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius:
+                  BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(18),
+
+            enabledBorder:
+                OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(18),
+
+            focusedBorder:
+                OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(18),
               borderSide: const BorderSide(
                 color: primaryColor,
                 width: 1.5,
@@ -91,7 +115,8 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const ListeLivresScreen(),
+
+        home: const SplashScreen(),
       ),
     );
   }

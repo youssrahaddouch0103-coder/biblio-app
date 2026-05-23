@@ -112,6 +112,7 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                               note: livre.note?.toStringAsFixed(1) ?? '0.0',
                               lu: livre.lu,
                               favori: livre.favori,
+                              heroTag: 'livre_${livre.titre}',
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -352,6 +353,7 @@ class _BookModernCard extends StatelessWidget {
   final String note;
   final bool lu;
   final bool favori;
+  final String heroTag;
   final VoidCallback onTap;
 
   const _BookModernCard({
@@ -362,6 +364,7 @@ class _BookModernCard extends StatelessWidget {
     required this.note,
     required this.lu,
     required this.favori,
+    required this.heroTag,
     required this.onTap,
   });
 
@@ -392,7 +395,13 @@ class _BookModernCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _BookCoverLetter(title: titre, favori: favori),
+                Hero(
+                  tag: heroTag,
+                  child: _BookCoverLetter(
+                    title: titre,
+                    favori: favori,
+                  ),
+                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -484,43 +493,46 @@ class _BookCoverLetter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 58,
-      height: 82,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            primaryColor,
-            Color(0xFF5A61C9),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Stack(
-        children: [
-          Center(
-            child: Text(
-              title.isNotEmpty ? title[0].toUpperCase() : '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: 58,
+        height: 82,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              primaryColor,
+              Color(0xFF5A61C9),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          if (favori)
-            const Positioned(
-              top: 6,
-              right: 6,
-              child: Icon(
-                Icons.favorite_rounded,
-                color: accentColor,
-                size: 16,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Text(
+                title.isNotEmpty ? title[0].toUpperCase() : '?',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-        ],
+            if (favori)
+              const Positioned(
+                top: 6,
+                right: 6,
+                child: Icon(
+                  Icons.favorite_rounded,
+                  color: accentColor,
+                  size: 16,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
