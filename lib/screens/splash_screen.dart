@@ -8,17 +8,26 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() =>
+      _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState
+    extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
 
-  static const Color primaryColor = Color(0xFF25316D);
-  static const Color accentColor = Color(0xFFFFB84C);
+  static const Color primaryColor =
+      Color(0xFF1E1E2E);
+
+  static const Color secondaryColor =
+      Color(0xFF2D3250);
+
+  static const Color accentColor =
+      Color(0xFFF6B17A);
 
   @override
   void initState() {
@@ -26,7 +35,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration:
+          const Duration(milliseconds: 1400),
     );
 
     _scaleAnimation = CurvedAnimation(
@@ -45,7 +55,8 @@ class _SplashScreenState extends State<SplashScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const ListeLivresScreen(),
+          builder: (_) =>
+              const ListeLivresScreen(),
         ),
       );
     });
@@ -60,70 +71,100 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
       body: Container(
         width: double.infinity,
         height: double.infinity,
+
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
               primaryColor,
-              Color(0xFF3949AB),
+              secondaryColor,
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
+
         child: FadeTransition(
           opacity: _fadeAnimation,
+
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment:
+                MainAxisAlignment.center,
+
             children: [
               ScaleTransition(
                 scale: _scaleAnimation,
+
                 child: Container(
-                  width: 115,
-                  height: 115,
+                  width: 125,
+                  height: 125,
+
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(34),
+                    color: Colors.white
+                        .withValues(alpha: 0.08),
+
+                    borderRadius:
+                        BorderRadius.circular(36),
+
+                    border: Border.all(
+                      color: Colors.white
+                          .withValues(alpha: 0.10),
+                    ),
+
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.18),
-                        blurRadius: 24,
-                        offset: const Offset(0, 12),
+                        color: Colors.black
+                            .withValues(alpha: 0.22),
+
+                        blurRadius: 30,
+                        offset:
+                            const Offset(0, 16),
                       ),
                     ],
                   ),
+
                   child: const Icon(
-                    Icons.local_library_rounded,
-                    color: primaryColor,
-                    size: 62,
+                    Icons.auto_stories_rounded,
+                    color: accentColor,
+                    size: 66,
                   ),
                 ),
               ),
-              const SizedBox(height: 28),
+
+              const SizedBox(height: 34),
+
               const Text(
                 'BiblioApp',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 34,
+                  fontSize: 38,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+                  letterSpacing: 1.2,
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Votre bibliothèque personnelle',
+
+              const SizedBox(height: 12),
+
+              Text(
+                'Votre espace de lecture moderne',
                 style: TextStyle(
-                  color: Colors.white70,
+                  color:
+                      Colors.white.withValues(
+                    alpha: 0.72,
+                  ),
                   fontSize: 16,
+                  letterSpacing: 0.3,
                 ),
               ),
-              const SizedBox(height: 42),
+
+              const SizedBox(height: 52),
+
               const SizedBox(
-                width: 34,
-                height: 34,
+                width: 36,
+                height: 36,
+
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
                   color: accentColor,

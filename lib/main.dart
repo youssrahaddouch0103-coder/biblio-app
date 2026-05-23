@@ -27,39 +27,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF25316D);
-    const secondaryColor = Color(0xFFFFB84C);
-    const backgroundColor = Color(0xFFF7F3EA);
-
     return BlocProvider(
       create: (_) =>
           LivreBloc(repository)..add(LoadLivres()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'BiblioApp',
+
         theme: ThemeData(
           useMaterial3: true,
 
           scaffoldBackgroundColor:
-              backgroundColor,
+              const Color(0xFFF8F5F2),
 
           colorScheme: ColorScheme.fromSeed(
-            seedColor: primaryColor,
-            primary: primaryColor,
-            secondary: secondaryColor,
-            surface: Colors.white,
+            seedColor: const Color(0xFF1E1E2E),
+            brightness: Brightness.light,
           ),
 
-          fontFamily: 'Roboto',
-
           appBarTheme: const AppBarTheme(
-            backgroundColor: backgroundColor,
-            foregroundColor: primaryColor,
+            backgroundColor:
+                Color(0xFFF8F5F2),
+            foregroundColor:
+                Color(0xFF1E1E2E),
             elevation: 0,
-            centerTitle: false,
+            centerTitle: true,
             titleTextStyle: TextStyle(
-              color: primaryColor,
-              fontSize: 24,
+              color: Color(0xFF1E1E2E),
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -71,13 +66,6 @@ class MyApp extends StatelessWidget {
               borderRadius:
                   BorderRadius.circular(24),
             ),
-          ),
-
-          floatingActionButtonTheme:
-              const FloatingActionButtonThemeData(
-            backgroundColor: primaryColor,
-            foregroundColor: Colors.white,
-            elevation: 4,
           ),
 
           inputDecorationTheme:
@@ -109,9 +97,76 @@ class MyApp extends StatelessWidget {
               borderRadius:
                   BorderRadius.circular(18),
               borderSide: const BorderSide(
-                color: primaryColor,
+                color: Color(0xFFF6B17A),
                 width: 1.5,
               ),
+            ),
+          ),
+
+          elevatedButtonTheme:
+              ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  const Color(0xFFF6B17A),
+
+              foregroundColor:
+                  const Color(0xFF1E1E2E),
+
+              elevation: 0,
+
+              padding:
+                  const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 16,
+              ),
+
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(18),
+              ),
+
+              textStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+
+          floatingActionButtonTheme:
+              const FloatingActionButtonThemeData(
+            backgroundColor:
+                Color(0xFFF6B17A),
+
+            foregroundColor:
+                Color(0xFF1E1E2E),
+          ),
+
+          chipTheme: ChipThemeData(
+            backgroundColor: Colors.white,
+
+            selectedColor:
+                const Color(0xFFF6B17A),
+
+            labelStyle: const TextStyle(
+              color: Color(0xFF1E1E2E),
+              fontWeight: FontWeight.w600,
+            ),
+
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(50),
+            ),
+          ),
+
+          textTheme: const TextTheme(
+            headlineMedium: TextStyle(
+              color: Color(0xFF1E1E2E),
+              fontWeight: FontWeight.bold,
+            ),
+
+            bodyMedium: TextStyle(
+              color: Color(0xFF444444),
+              fontSize: 15,
             ),
           ),
         ),
