@@ -26,6 +26,9 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
   bool _lu = false;
   bool _favori = false;
 
+  static const Color primaryColor = Color(0xFF25316D);
+  static const Color accentColor = Color(0xFFFFB84C);
+
   final List<String> _genres = [
     'Roman',
     'Fantasy',
@@ -39,9 +42,6 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
     'Développement personnel',
     'Autre',
   ];
-
-  static const Color primaryColor = Color(0xFF25316D);
-  static const Color accentColor = Color(0xFFFFB84C);
 
   @override
   void dispose() {
@@ -145,10 +145,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
               color: accentColor.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
-              icon,
-              color: primaryColor,
-            ),
+            child: Icon(icon, color: primaryColor),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -176,7 +173,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
           ),
           Switch(
             value: value,
-            activeColor: primaryColor,
+            activeThumbColor: primaryColor,
             onChanged: onChanged,
           ),
         ],
@@ -187,15 +184,9 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
   Widget _buildGenreDropdown() {
     return DropdownButtonFormField<String>(
       initialValue: _genre,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: 'Genre',
-        prefixIcon: const Icon(Icons.category_rounded),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide.none,
-        ),
+        prefixIcon: Icon(Icons.category_rounded),
       ),
       items: _genres.map((genre) {
         return DropdownMenuItem(
@@ -227,10 +218,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: accentColor.withValues(alpha: 0.18),
                 borderRadius: BorderRadius.circular(14),
@@ -293,30 +281,16 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [
-                      primaryColor,
-                      Color(0xFF3949AB),
-                    ],
+                    colors: [primaryColor, Color(0xFF3949AB)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withValues(alpha: 0.18),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
                 ),
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.menu_book_rounded,
-                      color: accentColor,
-                      size: 42,
-                    ),
+                    Icon(Icons.menu_book_rounded, color: accentColor, size: 42),
                     SizedBox(height: 16),
                     Text(
                       'Ajouter un nouveau livre',
@@ -329,19 +303,13 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                     SizedBox(height: 8),
                     Text(
                       'Construis ta bibliothèque personnelle avec style.',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               _buildSectionTitle('Informations principales'),
-
               _buildCard(
                 child: Column(
                   children: [
@@ -373,19 +341,11 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               _buildSectionTitle('Évaluation'),
-
-              _buildCard(
-                child: _buildRatingSection(),
-              ),
-
+              _buildCard(child: _buildRatingSection()),
               const SizedBox(height: 24),
-
               _buildSectionTitle('Préférences'),
-
               _buildCard(
                 child: Column(
                   children: [
@@ -414,35 +374,23 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 32),
-
               SizedBox(
                 width: double.infinity,
                 height: 58,
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   onPressed: _saveLivre,
+                  icon: const Icon(Icons.save_rounded),
+                  label: const Text(
+                    'Enregistrer le livre',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
-                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.save_rounded),
-                      SizedBox(width: 10),
-                      Text(
-                        'Enregistrer le livre',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),

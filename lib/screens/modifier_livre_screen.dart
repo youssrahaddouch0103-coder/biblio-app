@@ -209,7 +209,7 @@ class _ModifierLivreScreenState
           ),
           Switch(
             value: value,
-            activeColor: primaryColor,
+            activeThumbColor: primaryColor,
             onChanged: onChanged,
           ),
         ],
