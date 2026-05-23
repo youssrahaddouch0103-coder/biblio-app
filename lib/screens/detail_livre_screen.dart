@@ -29,12 +29,15 @@ class DetailLivreScreen extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
+                // On capture le ScaffoldMessenger avant de fermer l'écran
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+
                 context.read<LivreBloc>().add(DeleteLivre(livre.id!));
 
-                Navigator.pop(dialogContext);
-                Navigator.pop(context);
+                Navigator.pop(dialogContext); // Ferme le dialogue
+                Navigator.pop(context);       // Retourne à la liste
 
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   const SnackBar(
                     content: Text('Livre supprimé avec succès'),
                   ),
@@ -106,7 +109,7 @@ class DetailLivreScreen extends StatelessWidget {
               CircleAvatar(
                 radius: 42,
                 child: Text(
-                  livre.titre[0].toUpperCase(),
+                  livre.titre.isNotEmpty ? livre.titre[0].toUpperCase() : '?',
                   style: const TextStyle(fontSize: 30),
                 ),
               ),
@@ -129,7 +132,6 @@ class DetailLivreScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
               _buildInfoTile(
                 icon: Icons.person,
                 title: 'Auteur',
