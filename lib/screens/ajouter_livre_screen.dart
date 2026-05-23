@@ -111,8 +111,9 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
               ),
               const SizedBox(height: 16),
 
+              // ... dans le build de AjouterLivreScreen
               DropdownButtonFormField<String>(
-                initialValue: _genre,
+                initialValue: _genre, // Utilisé "value" au lieu de "initialValue"
                 decoration: const InputDecoration(
                   labelText: 'Genre',
                   prefixIcon: Icon(Icons.category),
