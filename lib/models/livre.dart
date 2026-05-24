@@ -2,25 +2,21 @@ class Livre {
   final int? id;
   final String titre;
   final String auteur;
-  final int? annee;
-  final String? genre;
-  final double? note;
-  final bool lu;
-  final bool favori;
-  final String? dateAjout;
-  final String? dateModification;
+  final int annee;
+  final String genre;
+  final int note; // Correspond au nombre d'étoiles (1 à 5)
+  final bool estLu;
+  final String resume;
 
   Livre({
     this.id,
     required this.titre,
     required this.auteur,
-    this.annee,
-    this.genre,
-    this.note,
-    this.lu = false,
-    this.favori = false,
-    this.dateAjout,
-    this.dateModification,
+    required this.annee,
+    required this.genre,
+    required this.note,
+    required this.estLu,
+    required this.resume,
   });
 
   Map<String, dynamic> toMap() {
@@ -31,51 +27,21 @@ class Livre {
       'annee': annee,
       'genre': genre,
       'note': note,
-      'lu': lu ? 1 : 0,
-      'favori': favori ? 1 : 0,
-      'dateAjout': dateAjout,
-      'dateModification': dateModification,
+      'estLu': estLu ? 1 : 0, // SQLite stocke les booléens sous forme d'entiers
+      'resume': resume,
     };
   }
 
   factory Livre.fromMap(Map<String, dynamic> map) {
     return Livre(
-      id: map['id'],
-      titre: map['titre'],
-      auteur: map['auteur'],
-      annee: map['annee'],
-      genre: map['genre'],
-      note: map['note']?.toDouble(),
-      lu: map['lu'] == 1,
-      favori: map['favori'] == 1,
-      dateAjout: map['dateAjout'],
-      dateModification: map['dateModification'],
-    );
-  }
-
-  Livre copyWith({
-    int? id,
-    String? titre,
-    String? auteur,
-    int? annee,
-    String? genre,
-    double? note,
-    bool? lu,
-    bool? favori,
-    String? dateAjout,
-    String? dateModification,
-  }) {
-    return Livre(
-      id: id ?? this.id,
-      titre: titre ?? this.titre,
-      auteur: auteur ?? this.auteur,
-      annee: annee ?? this.annee,
-      genre: genre ?? this.genre,
-      note: note ?? this.note,
-      lu: lu ?? this.lu,
-      favori: favori ?? this.favori,
-      dateAjout: dateAjout ?? this.dateAjout,
-      dateModification: dateModification ?? this.dateModification,
+      id: map['id'] as int?,
+      titre: map['titre'] as String,
+      auteur: map['auteur'] as String,
+      annee: map['annee'] as int,
+      genre: map['genre'] as String,
+      note: map['note'] as int,
+      estLu: (map['estLu'] as int) == 1,
+      resume: map['resume'] as String? ?? '',
     );
   }
 }

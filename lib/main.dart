@@ -1,177 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'bloc/livre_bloc.dart';
-import 'bloc/livre_event.dart';
 import 'database/database_helper.dart';
 import 'repositories/livre_repository.dart';
-import 'screens/splash_screen.dart';
+import 'screens/liste_livres_screen.dart';
 
-void main() {
-  final repository = LivreRepository(
-    databaseHelper: DatabaseHelper.instance,
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialisation de la base de données locale
+  final databaseHelper = DatabaseHelper();
 
-  runApp(
-    MyApp(repository: repository),
-  );
+  runApp(MainApp(databaseHelper: databaseHelper));
 }
 
-class MyApp extends StatelessWidget {
-  final LivreRepository repository;
+class MainApp extends StatelessWidget {
+  final DatabaseHelper databaseHelper;
 
-  const MyApp({
-    super.key,
-    required this.repository,
-  });
+  const MainApp({super.key, required this.databaseHelper});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          LivreBloc(repository)..add(LoadLivres()),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'BiblioApp',
-
-        theme: ThemeData(
-          useMaterial3: true,
-
-          scaffoldBackgroundColor:
-              const Color(0xFFF8F5F2),
-
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF1E1E2E),
-            brightness: Brightness.light,
-          ),
-
-          appBarTheme: const AppBarTheme(
-            backgroundColor:
-                Color(0xFFF8F5F2),
-            foregroundColor:
-                Color(0xFF1E1E2E),
-            elevation: 0,
-            centerTitle: true,
-            titleTextStyle: TextStyle(
-              color: Color(0xFF1E1E2E),
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+    return RepositoryProvider(
+      // CORRECTION : Injection obligatoire du paramètre databaseHelper
+      create: (context) => LivreRepository(databaseHelper: databaseHelper),
+      child: BlocProvider(
+        create: (context) => LivreBloc(
+          livreRepository: RepositoryProvider.of<LivreRepository>(context),
+        )..add(const ObtenirLivresEvent()), // Assurez-vous du nom de votre Event
+        child: MaterialApp(
+          title: 'Bibliothèque Moderne',
+          debugShowCheckedModeBanner: false,
+          
+          // APPLICATION DE LA NOUVELLE CHARTE GRAPHIQUE UNIQUE
+          theme: ThemeData(
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: const Color(0xFF121212), // Fond principal
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFF9D4EDD),   // Violet Néon
+              secondary: Color(0xFFBB86FC), // Accent clair
+              surface: Color(0xFF1E1E1E),   // Cartes et conteneurs
             ),
-          ),
-
-          cardTheme: CardThemeData(
-            color: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(24),
-            ),
-          ),
-
-          inputDecorationTheme:
-              InputDecorationTheme(
-            filled: true,
-            fillColor: Colors.white,
-
-            contentPadding:
-                const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 16,
-            ),
-
-            border: OutlineInputBorder(
-              borderRadius:
-                  BorderRadius.circular(18),
-              borderSide: BorderSide.none,
-            ),
-
-            enabledBorder:
-                OutlineInputBorder(
-              borderRadius:
-                  BorderRadius.circular(18),
-              borderSide: BorderSide.none,
-            ),
-
-            focusedBorder:
-                OutlineInputBorder(
-              borderRadius:
-                  BorderRadius.circular(18),
-              borderSide: const BorderSide(
-                color: Color(0xFFF6B17A),
-                width: 1.5,
-              ),
-            ),
-          ),
-
-          elevatedButtonTheme:
-              ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  const Color(0xFFF6B17A),
-
-              foregroundColor:
-                  const Color(0xFF1E1E2E),
-
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Color(0xFF121212),
               elevation: 0,
-
-              padding:
-                  const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 16,
-              ),
-
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(18),
-              ),
-
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              centerTitle: false, // Titre asymétrique à gauche (Style Épuré)
+              titleTextStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
-
-          floatingActionButtonTheme:
-              const FloatingActionButtonThemeData(
-            backgroundColor:
-                Color(0xFFF6B17A),
-
-            foregroundColor:
-                Color(0xFF1E1E2E),
-          ),
-
-          chipTheme: ChipThemeData(
-            backgroundColor: Colors.white,
-
-            selectedColor:
-                const Color(0xFFF6B17A),
-
-            labelStyle: const TextStyle(
-              color: Color(0xFF1E1E2E),
-              fontWeight: FontWeight.w600,
-            ),
-
-            shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(50),
-            ),
-          ),
-
-          textTheme: const TextTheme(
-            headlineMedium: TextStyle(
-              color: Color(0xFF1E1E2E),
-              fontWeight: FontWeight.bold,
-            ),
-
-            bodyMedium: TextStyle(
-              color: Color(0xFF444444),
-              fontSize: 15,
-            ),
-          ),
+          home: const ListeLivresScreen(),
         ),
-
-        home: const SplashScreen(),
       ),
     );
   }
