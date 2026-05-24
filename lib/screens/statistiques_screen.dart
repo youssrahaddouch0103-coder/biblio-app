@@ -7,14 +7,9 @@ import '../bloc/livre_state.dart';
 class StatistiquesScreen extends StatelessWidget {
   const StatistiquesScreen({super.key});
 
-  static const Color primaryColor =
-      Color(0xFF1E1E2E);
-
-  static const Color secondaryColor =
-      Color(0xFF2D3250);
-
-  static const Color accentColor =
-      Color(0xFFF6B17A);
+  static const Color primaryColor = Color(0xFF1E1E2E);
+  static const Color secondaryColor = Color(0xFF2D3250);
+  static const Color accentColor = Color(0xFFF6B17A);
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +17,11 @@ class StatistiquesScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Statistiques'),
       ),
-
       body: BlocBuilder<LivreBloc, LivreState>(
         builder: (context, state) {
           if (state is LivreLoading) {
             return const Center(
-              child:
-                  CircularProgressIndicator(),
+              child: CircularProgressIndicator(),
             );
           }
 
@@ -39,213 +32,47 @@ class StatistiquesScreen extends StatelessWidget {
           }
 
           if (state is LivreLoaded) {
-            final totalLivres =
-                state.livres.length;
+            final totalLivres = state.livres.length;
+            final livresLus = state.livres.where((livre) => livre.lu).length;
+            final livresFavoris = state.livres.where((livre) => livre.favori).length;
 
-            final livresLus = state.livres
-                .where((livre) => livre.lu)
-                .length;
+            // Sécurisation complète du calcul de la moyenne
+            final livresAvecNote = state.livres.where((livre) => livre.note != null).toList();
+            final moyenneNotes = livresAvecNote.isEmpty
+                ? 0.0
+                : livresAvecNote.map((livre) => livre.note!).reduce((a, b) => a + b) /
+                    livresAvecNote.length;
 
-            final livresFavoris =
-                state.livres
-                    .where(
-                      (livre) =>
-                          livre.favori,
-                    )
-                    .length;
-
-            final moyenneNotes =
-                state.livres
-                        .where(
-                          (livre) =>
-                              livre.note !=
-                              null,
-                        )
-                        .isEmpty
-                    ? 0.0
-                    : state.livres
-                            .where(
-                              (livre) =>
-                                  livre.note !=
-                                  null,
-                            )
-                            .map(
-                              (livre) =>
-                                  livre.note!,
-                            )
-                            .reduce(
-                              (a, b) =>
-                                  a + b,
-                            ) /
-                        state.livres
-                            .where(
-                              (livre) =>
-                                  livre.note !=
-                                  null,
-                            )
-                            .length;
-
-            return SingleChildScrollView(
-              padding:
-                  const EdgeInsets.all(16),
-
-              child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
                 children: [
-                  Container(
-                    width: double.infinity,
-
-                    padding:
-                        const EdgeInsets.all(
-                            28),
-
-                    decoration: BoxDecoration(
-                      gradient:
-                          const LinearGradient(
-                        colors: [
-                          primaryColor,
-                          secondaryColor,
-                        ],
-                      ),
-
-                      borderRadius:
-                          BorderRadius.circular(
-                              32),
-
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black
-                              .withValues(
-                            alpha: 0.12,
-                          ),
-
-                          blurRadius: 24,
-
-                          offset:
-                              const Offset(
-                            0,
-                            12,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment
-                              .start,
-
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons
-                                  .insights_rounded,
-                              color:
-                                  accentColor,
-                              size: 38,
-                            ),
-
-                            SizedBox(
-                                width: 14),
-
-                            Text(
-                              'Dashboard',
-                              style:
-                                  TextStyle(
-                                color: Colors
-                                    .white,
-
-                                fontSize: 30,
-
-                                fontWeight:
-                                    FontWeight
-                                        .bold,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(
-                            height: 14),
-
-                        Text(
-                          '$totalLivres livres enregistrés',
-                          style: TextStyle(
-                            color: Colors.white
-                                .withValues(
-                              alpha: 0.72,
-                            ),
-
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
-                    ),
+                  _StatCard(
+                    title: 'Total Livres',
+                    value: totalLivres.toString(),
+                    icon: Icons.collections_bookmark_rounded,
+                    color: primaryColor,
                   ),
-
-                  const SizedBox(height: 28),
-
-                  GridView.count(
-                    shrinkWrap: true,
-
-                    physics:
-                        const NeverScrollableScrollPhysics(),
-
-                    crossAxisCount: 2,
-
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
-
-                    childAspectRatio: 1.02,
-
-                    children: [
-                      _StatCard(
-                        title: 'Livres',
-                        value:
-                            totalLivres
-                                .toString(),
-                        icon:
-                            Icons.menu_book,
-                        color:
-                            accentColor,
-                      ),
-
-                      _StatCard(
-                        title: 'Lus',
-                        value:
-                            livresLus
-                                .toString(),
-                        icon: Icons
-                            .check_circle_rounded,
-                        color: Colors.green,
-                      ),
-
-                      _StatCard(
-                        title: 'Favoris',
-                        value:
-                            livresFavoris
-                                .toString(),
-                        icon: Icons
-                            .favorite_rounded,
-                        color: Colors.red,
-                      ),
-
-                      _StatCard(
-                        title:
-                            'Note moyenne',
-                        value:
-                            moyenneNotes
-                                .toStringAsFixed(
-                                    1),
-                        icon: Icons
-                            .star_rounded,
-                        color:
-                            Colors.orange,
-                      ),
-                    ],
+                  _StatCard(
+                    title: 'Livres Lus',
+                    value: livresLus.toString(),
+                    icon: Icons.check_circle_rounded,
+                    color: Colors.green,
+                  ),
+                  _StatCard(
+                    title: 'Favoris',
+                    value: livresFavoris.toString(),
+                    icon: Icons.favorite_rounded,
+                    color: Colors.redAccent,
+                  ),
+                  _StatCard(
+                    title: 'Note Moyenne',
+                    value: '${moyenneNotes.toStringAsFixed(1)} / 5',
+                    icon: Icons.star_rounded,
+                    color: accentColor,
                   ),
                 ],
               ),
@@ -253,7 +80,7 @@ class StatistiquesScreen extends StatelessWidget {
           }
 
           return const Center(
-            child: Text('Chargement...'),
+            child: Text('Aucune donnée disponible'),
           );
         },
       ),
@@ -274,75 +101,41 @@ class _StatCard extends StatelessWidget {
     required this.color,
   });
 
-  static const Color primaryColor =
-      Color(0xFF1E1E2E);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
-
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-
-        borderRadius:
-            BorderRadius.circular(28),
-
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color:
-                Colors.black.withValues(
-              alpha: 0.05,
-            ),
-
-            blurRadius: 16,
-
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 54,
-            height: 54,
-
-            decoration: BoxDecoration(
-              color:
-                  color.withValues(alpha: 0.14),
-
-              borderRadius:
-                  BorderRadius.circular(18),
-            ),
-
-            child: Icon(
-              icon,
-              color: color,
-            ),
-          ),
-
-          const Spacer(),
-
+          Icon(icon, color: color, size: 40),
+          const SizedBox(height: 12),
           Text(
             value,
             style: const TextStyle(
-              color: primaryColor,
-              fontSize: 30,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
+              color: StatistiquesScreen.primaryColor,
             ),
           ),
-
-          const SizedBox(height: 6),
-
+          const SizedBox(height: 4),
           Text(
             title,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.grey[700],
-              fontSize: 15,
+              fontSize: 14,
+              color: Colors.grey[600],
             ),
           ),
         ],
