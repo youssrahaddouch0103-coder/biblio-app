@@ -8,7 +8,6 @@ class StatistiquesScreen extends StatelessWidget {
   const StatistiquesScreen({super.key});
 
   static const Color primaryColor = Color(0xFF1E1E2E);
-  static const Color secondaryColor = Color(0xFF2D3250);
   static const Color accentColor = Color(0xFFF6B17A);
 
   @override
@@ -20,27 +19,27 @@ class StatistiquesScreen extends StatelessWidget {
       body: BlocBuilder<LivreBloc, LivreState>(
         builder: (context, state) {
           if (state is LivreLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is LivreError) {
-            return Center(
-              child: Text(state.message),
-            );
+            return Center(child: Text(state.message));
           }
 
           if (state is LivreLoaded) {
             final totalLivres = state.livres.length;
             final livresLus = state.livres.where((livre) => livre.lu).length;
-            final livresFavoris = state.livres.where((livre) => livre.favori).length;
+            final livresFavoris =
+                state.livres.where((livre) => livre.favori).length;
 
-            // Sécurisation complète du calcul de la moyenne
-            final livresAvecNote = state.livres.where((livre) => livre.note != null).toList();
+            final livresAvecNote =
+                state.livres.where((livre) => livre.note != null).toList();
+
             final moyenneNotes = livresAvecNote.isEmpty
                 ? 0.0
-                : livresAvecNote.map((livre) => livre.note!).reduce((a, b) => a + b) /
+                : livresAvecNote
+                        .map((livre) => livre.note!)
+                        .reduce((a, b) => a + b) /
                     livresAvecNote.length;
 
             return Padding(
@@ -110,7 +109,7 @@ class _StatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),

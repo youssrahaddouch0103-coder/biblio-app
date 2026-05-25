@@ -20,6 +20,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
   final _titreController = TextEditingController();
   final _auteurController = TextEditingController();
   final _anneeController = TextEditingController();
+  final _contenuController = TextEditingController();
 
   String _genre = 'Roman';
   double _note = 3.0;
@@ -50,6 +51,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
     _titreController.dispose();
     _auteurController.dispose();
     _anneeController.dispose();
+    _contenuController.dispose();
     super.dispose();
   }
 
@@ -67,6 +69,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
         favori: _favori,
         dateAjout: DateTime.now().toIso8601String(),
         dateModification: null,
+        contenu: _contenuController.text.trim(),
       );
 
       context.read<LivreBloc>().add(AddLivre(livre));
@@ -84,6 +87,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
           ),
         ),
       );
+
       Navigator.pop(context);
     }
   }
@@ -113,7 +117,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.045),
+            color: Colors.black.withValues(alpha: 0.045),
             blurRadius: 18,
             offset: const Offset(0, 10),
           ),
@@ -124,23 +128,53 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
   }
 
   Widget _buildStarRating() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) {
-        final starValue = index + 1.0;
-        return IconButton(
-          icon: Icon(
-            _note >= starValue ? Icons.star_rounded : Icons.star_border_rounded,
-            color: accentColor,
-            size: 42,
-          ),
-          onPressed: () {
-            setState(() {
-              _note = starValue;
-            });
-          },
-        );
-      }),
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(5, (index) {
+          final starValue = index + 1.0;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _note = starValue;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Icon(
+                _note >= starValue
+                    ? Icons.star_rounded
+                    : Icons.star_border_rounded,
+                color: accentColor,
+                size: 36,
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildContenuField() {
+    return TextFormField(
+      controller: _contenuController,
+      maxLines: 10,
+      decoration: InputDecoration(
+        labelText: 'Texte / résumé / chapitre',
+        alignLabelWithHint: true,
+        prefixIcon: const Padding(
+          padding: EdgeInsets.only(bottom: 120),
+          child: Icon(Icons.menu_book_rounded),
+        ),
+        filled: true,
+        fillColor: const Color(0xFFF6F1EB),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
+        ),
+      ),
     );
   }
 
@@ -193,7 +227,7 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                 child: Column(
                   children: [
                     DropdownButtonFormField<String>(
-                      value: _genre,
+                      initialValue: _genre,
                       decoration: const InputDecoration(
                         labelText: 'Genre littéraire',
                         prefixIcon: Icon(Icons.category_rounded),
@@ -235,6 +269,8 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                       subtitle: const Text('Ajouter aux livres lus'),
                       value: _lu,
                       secondary: const Icon(Icons.check_circle_rounded),
+                      activeThumbColor: primaryColor,
+                      activeTrackColor: accentColor,
                       onChanged: (value) {
                         setState(() {
                           _lu = value;
@@ -247,6 +283,8 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                       subtitle: const Text('Afficher dans les favoris'),
                       value: _favori,
                       secondary: const Icon(Icons.favorite_rounded),
+                      activeThumbColor: primaryColor,
+                      activeTrackColor: accentColor,
                       onChanged: (value) {
                         setState(() {
                           _favori = value;
@@ -255,6 +293,11 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 26),
+              _buildSectionTitle('Contenu du livre'),
+              _buildCard(
+                child: _buildContenuField(),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -265,7 +308,10 @@ class _AjouterLivreScreenState extends State<AjouterLivreScreen> {
                   icon: const Icon(Icons.save_rounded),
                   label: const Text(
                     'Enregistrer le livre',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

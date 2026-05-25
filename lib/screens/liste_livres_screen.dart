@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/livre_bloc.dart';
 import '../bloc/livre_state.dart';
+import '../models/livre.dart';
 import 'ajouter_livre_screen.dart';
 import 'detail_livre_screen.dart';
 import 'statistiques_screen.dart';
@@ -86,27 +87,24 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
             child: BlocBuilder<LivreBloc, LivreState>(
               builder: (context, state) {
                 if (state is LivreLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 if (state is LivreError) {
-                  return Center(
-                    child: Text(state.message),
-                  );
+                  return Center(child: Text(state.message));
                 }
 
                 if (state is LivreLoaded) {
                   var filteredLivres = state.livres.where((livre) {
-                    final matchesSearch = livre.titre
-                            .toLowerCase()
-                            .contains(searchQuery.toLowerCase()) ||
-                        livre.auteur
-                            .toLowerCase()
-                            .contains(searchQuery.toLowerCase());
-                    final matchesGenre = selectedGenre == 'Tous' ||
-                        livre.genre == selectedGenre;
+                    final query = searchQuery.toLowerCase();
+
+                    final matchesSearch =
+                        livre.titre.toLowerCase().contains(query) ||
+                            livre.auteur.toLowerCase().contains(query);
+
+                    final matchesGenre =
+                        selectedGenre == 'Tous' || livre.genre == selectedGenre;
+
                     final matchesFavoris = !favorisOnly || livre.favori;
                     final matchesLus = !lusOnly || livre.lu;
 
@@ -121,11 +119,14 @@ class _ListeLivresScreenState extends State<ListeLivresScreen> {
                   } else if (selectedSort == 'Auteur') {
                     filteredLivres.sort((a, b) => a.auteur.compareTo(b.auteur));
                   } else if (selectedSort == 'Note') {
-                    filteredLivres
-                        .sort((a, b) => (b.note ?? 0).compareTo(a.note ?? 0));
+                    filteredLivres.sort(
+                      (a, b) => (b.note ?? 0).compareTo(a.note ?? 0),
+                    );
                   } else if (selectedSort == 'Récents') {
-                    filteredLivres.sort((a, b) =>
-                        (b.dateAjout ?? '').compareTo(a.dateAjout ?? ''));
+                    filteredLivres.sort(
+                      (a, b) =>
+                          (b.dateAjout ?? '').compareTo(a.dateAjout ?? ''),
+                    );
                   }
 
                   if (filteredLivres.isEmpty) {
@@ -177,6 +178,7 @@ class HeaderSection extends StatelessWidget {
     return BlocBuilder<LivreBloc, LivreState>(
       builder: (context, state) {
         int count = 0;
+
         if (state is LivreLoaded) {
           count = state.livres.length;
         }
@@ -376,9 +378,12 @@ class AdvancedFilterSection extends StatelessWidget {
 }
 
 class BookModernCard extends StatelessWidget {
-  final dynamic livre; // Utilise ton type Livre ici
+  final Livre livre;
 
-  const BookModernCard({super.key, required this.livre});
+  const BookModernCard({
+    super.key,
+    required this.livre,
+  });
 
   static const Color primaryColor = Color(0xFF1E1E2E);
   static const Color accentColor = Color(0xFFF6B17A);
@@ -392,7 +397,7 @@ class BookModernCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -414,7 +419,7 @@ class BookModernCard extends StatelessWidget {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.08),
+              color: primaryColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
@@ -436,7 +441,10 @@ class BookModernCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 livre.auteur,
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 6),
               Row(
@@ -470,7 +478,10 @@ class BookModernCard extends StatelessWidget {
                 ),
               ],
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: Colors.grey,
+              ),
             ],
           ),
         ),
@@ -510,7 +521,10 @@ class EmptyBooksState extends StatelessWidget {
             Text(
               'Ajoute un nouveau livre ou modifie tes filtres.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[500], fontSize: 15),
+              style: TextStyle(
+                color: Colors.grey[500],
+                fontSize: 15,
+              ),
             ),
           ],
         ),
