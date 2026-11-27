@@ -1,5 +1,5 @@
 name: biblio_app
-description: "A new Flutter project."
+description: "Personal library mobile app built with Flutter, BLoC and SQLite."
 
 publish_to: 'none'
 
